@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { WalletButton } from './WalletButton'
@@ -17,6 +18,7 @@ export function Header() {
   return (
     <header className="site-header">
       <Link href="/" className="site-logo">
+        <Image src="/chaos-icon.png" alt="ChaosTheory" width={36} height={36} style={{ borderRadius: '50%' }} />
         <h1>Chaos<span className="logo-dot">Theory</span></h1>
       </Link>
       <nav className="site-nav">

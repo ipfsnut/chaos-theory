@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Image from 'next/image'
 import Link from 'next/link'
 import {
   CHAOS_ADDRESS,
@@ -36,6 +37,7 @@ export default function LandingPage() {
     <>
       {/* Hero */}
       <section className="hero">
+        <Image src="/chaos-icon.png" alt="ChaosTheory" width={96} height={96} style={{ borderRadius: '50%', marginBottom: 'var(--spacing-md)' }} />
         <h1>Chaos<span style={{ color: 'var(--accent)' }}>Theory</span></h1>
         <p className="tagline">
           Stake $CHAOS once. Earn 7 tokens. Infrastructure for moving price information
