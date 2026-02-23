@@ -43,11 +43,11 @@
     {
       "symbol": "USDC",
       "tokenAddress": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
-      "gaugeAddress": "0x0000000000000000000000000000000000000000",
+      "gaugeAddress": "0x8d3074Bdf9412D77269F59Cc506E318E5da27914",
       "decimals": 6,
       "pool": "CHAOS / USDC",
       "week": 2,
-      "status": "pending"
+      "status": "deployed"
     },
     {
       "symbol": "ALPHACLAW",
