@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useAccount, useSendTransaction } from 'wagmi'
-import { createPublicClient, http, formatUnits, encodeFunctionData, maxUint256 } from 'viem'
+import { createPublicClient, http, fallback, formatUnits, encodeFunctionData, maxUint256 } from 'viem'
 import { base } from 'viem/chains'
 import {
   CHAOS_ADDRESS,
@@ -12,10 +12,38 @@ import {
 } from '@/utils/constants'
 import { STAKING_ABI, GAUGE_ABI, ERC20_ABI } from '@/utils/abis'
 import { formatNumber, formatCountdown, parseToWei } from '@/utils/format'
+import snapshotData from './snapshot.json'
+
+// Build initial state from snapshot so page never shows "--" on load
+function buildInitialState(): StakingState {
+  const gauges: GaugeData[] = CHAOS_GAUGES.map(g => {
+    const snap = (snapshotData.gauges as Record<string, { rewardRate: string; periodFinish: number; status: string; inAssetApr: number }>)[g.symbol]
+    if (snap) {
+      return { ...g, rewardRate: snap.rewardRate, periodFinish: snap.periodFinish, earned: '0', inAssetApr: snap.inAssetApr, status: snap.status as 'live' | 'ended' | 'pending' }
+    }
+    return { ...g, rewardRate: '0', periodFinish: 0, earned: '0', inAssetApr: 0, status: 'pending' as const }
+  })
+  return {
+    totalStaked: snapshotData.totalStaked,
+    rewardRate: snapshotData.hubRewardRate,
+    periodFinish: snapshotData.hubPeriodFinish,
+    hubApr: snapshotData.hubApr,
+    staked: '0',
+    earned: '0',
+    allowance: '0',
+    balance: '0',
+    gauges,
+  }
+}
 
 const publicClient = createPublicClient({
   chain: base,
-  transport: http('https://mainnet.base.org'),
+  transport: fallback([
+    http('https://base.llamarpc.com'),
+    http('https://base-rpc.publicnode.com'),
+    http('https://base.meowrpc.com'),
+    http('https://mainnet.base.org'),
+  ]),
 })
 
 interface GaugeData extends GaugeConfig {
@@ -42,8 +70,8 @@ export default function StakePage() {
   const { address } = useAccount()
   const { sendTransactionAsync } = useSendTransaction()
 
-  const [data, setData] = useState<StakingState | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [data, setData] = useState<StakingState>(buildInitialState)
+  const [loading, setLoading] = useState(false)
   const [stakeAmount, setStakeAmount] = useState('')
   const [withdrawAmount, setWithdrawAmount] = useState('')
   const [actionLoading, setActionLoading] = useState<string | null>(null)
@@ -62,8 +90,9 @@ export default function StakePage() {
         publicClient.readContract({ address: stakingAddr, abi: STAKING_ABI, functionName: 'periodFinish' }),
       ])
 
-      // Hub APR
       const now = Math.floor(Date.now() / 1000)
+
+      // Hub APR (CHAOS→CHAOS, no price needed)
       let hubApr = 0
       if (totalSupply > 0n && Number(periodFinish) > now) {
         hubApr = Number(rewardRate * 365n * 86400n * 100n * 10000n / totalSupply) / 10000
@@ -100,11 +129,9 @@ export default function StakePage() {
               : 0n,
           ])
 
-          let inAssetApr = 0
-          if (totalSupply > 0n && Number(gPeriodFinish) > now) {
-            const annualRaw = gRewardRate * 365n * 86400n
-            inAssetApr = Number(formatUnits(annualRaw, g.decimals)) / Number(formatUnits(totalSupply, 18))
-          }
+          // Use snapshot APR (calculated at build time with price data)
+          const snapshotGauge = (snapshotData.gauges as Record<string, { inAssetApr: number }>)[g.symbol]
+          const inAssetApr = snapshotGauge?.inAssetApr ?? 0
 
           const status = Number(gPeriodFinish) > now ? 'live' : Number(gPeriodFinish) > 0 ? 'ended' : 'pending'
 
@@ -297,7 +324,7 @@ export default function StakePage() {
         </div>
         <div className="stat-card">
           <span className="stat-label">Hub APR</span>
-          <span className="stat-value">{data ? `${data.hubApr.toFixed(1)}%` : '--'}</span>
+          <span className="stat-value">{data ? (data.hubApr > 0 ? `${data.hubApr.toFixed(1)}%` : '—') : '--'}</span>
         </div>
         <div className="stat-card">
           <span className="stat-label">Active Gauges</span>
@@ -322,8 +349,8 @@ export default function StakePage() {
             {g.status === 'live' && (
               <>
                 <div className="gauge-stat">
-                  <span className="gauge-stat-label">APR (in-asset)</span>
-                  <span className="gauge-stat-value">{g.inAssetApr.toFixed(2)}</span>
+                  <span className="gauge-stat-label">APR</span>
+                  <span className="gauge-stat-value">{g.inAssetApr > 0 ? `${g.inAssetApr.toFixed(1)}%` : '—'}</span>
                 </div>
                 <div className="gauge-stat">
                   <span className="gauge-stat-label">Remaining</span>

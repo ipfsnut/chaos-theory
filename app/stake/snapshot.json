@@ -1,0 +1,21 @@
+{
+  "snapshotTime": 1771821120,
+  "totalStaked": "394824374864371334265176064",
+  "hubRewardRate": "0",
+  "hubPeriodFinish": 0,
+  "hubApr": 0,
+  "gauges": {
+    "ARBME": {
+      "rewardRate": "883389846250571572",
+      "periodFinish": 1787369199,
+      "status": "live",
+      "inAssetApr": 32.04495828292176
+    },
+    "USDC": {
+      "rewardRate": "6",
+      "periodFinish": 1787369157,
+      "status": "live",
+      "inAssetApr": 339.5931622836063
+    }
+  }
+}
