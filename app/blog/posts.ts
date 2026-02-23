@@ -12,25 +12,28 @@ export const POSTS: BlogPost[] = [
     date: '2026-02-22',
     title: 'USDC Gauge Live — Second Spoke Streaming',
     excerpt: 'The USDC reward gauge is deployed and streaming. CHAOS stakers are now earning USDC from LP fee revenue on the CHAOS/USDC pair — the stable anchor of the pair architecture.',
-    content: `The USDC gauge is live at 0x8d3074Bdf9412D77269F59Cc506E318E5da27914 on Base.
+    content: `The USDC gauge is live at 0x8d3074Bdf9412D77269F59Cc506E318E5da27914 on Base. Simultaneously, the ARBME gauge has been re-upped with a fresh deposit, restarting its 180-day reward window.
 
 This is the second spoke in the hub-and-spoke staking system. CHAOS stakers are now earning USDC alongside ARBME — two reward streams from two different CHAOS pairs, claimed in a single transaction.
 
 On-chain status:
-- USDC gauge: streaming, 180-day window active
-- ARBME gauge: streaming, 180-day window re-upped
+- USDC gauge: streaming, new 180-day window active
+- ARBME gauge: re-upped, 180-day window restarted with fresh deposit
 - Hub: 2 active gauges, ~394,824 CHAOS staked
 - Both gauges registered with the staking hub
+
+The ARBME gauge re-up is how the rolling window works in practice. The Foundation deposits new ARBME rewards, which extends the distribution period. Existing unclaimed rewards continue accumulating — nothing is lost. The reward rate adjusts to account for any remaining balance plus the new deposit, spread across the full 180-day duration.
 
 The CHAOS/USDC pair is the "stable anchor" in the pair architecture. USDC doesn't move, so any price movement in CHAOS creates an immediate arbitrage gradient against the USDC pair. This generates baseline volume that persists in all market conditions — it's the system's clock.
 
 What this means for stakers:
 - Stake $CHAOS once, earn both ARBME and USDC automatically
 - USDC comes from LP trading fees on the CHAOS/USDC pair
-- 180-day rolling distribution — the Foundation deposits weekly, extending the stream
+- ARBME rewards continue from the CHAOS/ARBME pair, now with a fresh 180-day window
+- 180-day rolling distributions — the Foundation deposits weekly, extending each stream
 - Claim all rewards (hub + ARBME gauge + USDC gauge) in a single getReward() call
 
-The gauge was deployed via the Foundation multisig using Safe's CreateCall module, registered with the staking hub via addExtraReward, and funded with an initial USDC deposit to start the 180-day stream.
+The USDC gauge was deployed via the Foundation multisig using Safe's CreateCall module, registered with the staking hub via addExtraReward, and funded with an initial USDC deposit to start the stream.
 
 Contract addresses:
 - USDC Gauge: 0x8d3074Bdf9412D77269F59Cc506E318E5da27914
