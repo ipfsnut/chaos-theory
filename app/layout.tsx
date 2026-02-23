@@ -5,6 +5,7 @@ import { Footer } from '@/components/Footer'
 import './globals.css'
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://chaos-theory.epicdylan.com'),
   title: {
     default: 'ChaosTheory — CHAOS Rails Infrastructure',
     template: '%s | ChaosTheory',
