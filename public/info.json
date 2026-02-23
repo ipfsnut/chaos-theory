@@ -1,0 +1,114 @@
+{
+  "name": "ChaosTheory",
+  "description": "Infrastructure for moving price information across Ethereum. Stake $CHAOS, earn 7 tokens via 180-day rolling LP fee streams from 7 CHAOS pairs on Base.",
+  "version": "1.0.0",
+  "chain": "base",
+  "chainId": 8453,
+  "website": "https://chaos-theory.epicdylan.com",
+  "arbme": "https://arbme.epicdylan.com",
+  "agentDocs": "https://abc-alpha.epicdylan.com",
+  "contracts": {
+    "chaos": {
+      "address": "0xfab2ee8eb6b26208bfb5c41012661e62b4dc9292",
+      "type": "ERC20",
+      "decimals": 18,
+      "name": "ChaosTheory",
+      "symbol": "CHAOS",
+      "flaunch": "https://www.flaunch.gg/base/coin/0xFaB2ee8eB6B26208BfB5c41012661e62b4Dc9292",
+      "basescan": "https://basescan.org/token/0xFaB2ee8eB6B26208BfB5c41012661e62b4Dc9292"
+    },
+    "stakingHub": {
+      "address": "0x70e6c917A8AC437E629B67E84C0C0678eD54460d",
+      "type": "StakingRewards",
+      "description": "Hub contract — stake CHAOS, earn CHAOS base rewards plus multi-gauge spoke rewards",
+      "rewardsDuration": 15552000,
+      "basescan": "https://basescan.org/address/0x70e6c917A8AC437E629B67E84C0C0678eD54460d"
+    },
+    "foundationMultisig": {
+      "address": "0x3CE26de6FF74e0Baa5F762b67465eEacfE84549F",
+      "type": "GnosisSafe",
+      "safe": "https://app.safe.global/home?safe=base:0x3CE26de6FF74e0Baa5F762b67465eEacfE84549F"
+    }
+  },
+  "gauges": [
+    {
+      "symbol": "ARBME",
+      "tokenAddress": "0xC647421C5Dc78D1c3960faA7A33f9aEFDF4B7B07",
+      "gaugeAddress": "0x37547710faE12B4be7458b5E87C3106a85CfD72F",
+      "decimals": 18,
+      "pool": "CHAOS / ARBME",
+      "week": 1,
+      "status": "deployed"
+    },
+    {
+      "symbol": "USDC",
+      "tokenAddress": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      "gaugeAddress": "0x0000000000000000000000000000000000000000",
+      "decimals": 6,
+      "pool": "CHAOS / USDC",
+      "week": 2,
+      "status": "pending"
+    },
+    {
+      "symbol": "ALPHACLAW",
+      "tokenAddress": "0x8C19A8b92FA406Ae097EB9eA8a4A44cBC10EafE2",
+      "gaugeAddress": "0x0000000000000000000000000000000000000000",
+      "decimals": 18,
+      "pool": "CHAOS / ALPHACLAW",
+      "week": 3,
+      "status": "pending"
+    },
+    {
+      "symbol": "MLTL",
+      "tokenAddress": "0xa448d40f6793773938a6b7427091c35676899125",
+      "gaugeAddress": "0x0000000000000000000000000000000000000000",
+      "decimals": 18,
+      "pool": "CHAOS / MLTL",
+      "week": 4,
+      "status": "pending"
+    },
+    {
+      "symbol": "OSO",
+      "tokenAddress": "0xc78fabc2cb5b9cf59e0af3da8e3bc46d47753a4e",
+      "gaugeAddress": "0x0000000000000000000000000000000000000000",
+      "decimals": 18,
+      "pool": "CHAOS / OSO",
+      "week": 5,
+      "status": "pending"
+    },
+    {
+      "symbol": "Cnews",
+      "tokenAddress": "0x01de044ad8eb037334ddda97a38bb0c798e4eb07",
+      "gaugeAddress": "0x0000000000000000000000000000000000000000",
+      "decimals": 18,
+      "pool": "CHAOS / Cnews",
+      "week": 6,
+      "status": "pending"
+    },
+    {
+      "symbol": "RATCHET",
+      "tokenAddress": "0x392bc5DeEa227043d69Af0e67BadCbBAeD511B07",
+      "gaugeAddress": "0x0000000000000000000000000000000000000000",
+      "decimals": 18,
+      "pool": "CHAOS / RATCHET",
+      "week": 7,
+      "status": "pending"
+    }
+  ],
+  "services": [
+    { "name": "Token Analysis", "turnaround": "24h", "price": "0.0050 ETH" },
+    { "name": "Safe Setup", "turnaround": "24h", "price": "0.0050 ETH" },
+    { "name": "Staking Contract Deployment", "turnaround": "48h", "price": "0.0500 ETH" },
+    { "name": "New Token Volume Package", "turnaround": "72h", "price": "0.0100 ETH" },
+    { "name": "LP Strategy Consult", "turnaround": "48h", "price": "0.1000 ETH" },
+    { "name": "AI-Ready Website Layer", "turnaround": "48h", "price": "0.0500 ETH", "description": "Add an AI-accessible semantic layer to your existing website with zero visual changes. Structured metadata, agent-friendly endpoints, and machine-readable context. Prerequisite: open-source GitHub repo." }
+  ],
+  "links": {
+    "flaunch": "https://www.flaunch.gg/base/coin/0xFaB2ee8eB6B26208BfB5c41012661e62b4Dc9292",
+    "basescan": "https://basescan.org/token/0xFaB2ee8eB6B26208BfB5c41012661e62b4Dc9292",
+    "moltlaunch": "https://moltlaunch.com/agent/0x3d9d",
+    "warpcast": "https://warpcast.com/abc-alpha",
+    "agentDocs": "https://abc-alpha.epicdylan.com",
+    "arbme": "https://arbme.epicdylan.com"
+  }
+}
