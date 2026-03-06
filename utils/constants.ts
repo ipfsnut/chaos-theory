@@ -4,7 +4,8 @@
  */
 
 // ── Core ChaosLP ──────────────────────────────────────────────────────
-export const CHAOSLP_ADDRESS = 'TODO_CHAOSLP_TOKEN_ADDRESS' as const;
+export const CHAOSLP_ADDRESS = '0x8454d062506a27675706148ecdd194e45e44067a' as const;
+export const CHAOSLP_FLAUNCH = '0x516af52d0c629b5e378da4dc64ecb0744ce10109' as const;
 export const CHAOSLP_STAKING_ADDRESS = 'TODO_STAKING_HUB_ADDRESS' as const;
 export const CHAOSLP_SAFE = '0xb7DD467A573809218aAE30EB2c60e8AE3a9198a0' as const;
 
@@ -31,7 +32,7 @@ export const CHAOSLP_GAUGES: GaugeConfig[] = [
 
 // ── External Links ────────────────────────────────────────────────────
 export const LINKS = {
-  flaunch: `https://www.flaunch.gg/base/coin/${CHAOSLP_ADDRESS}`,
+  flaunch: `https://www.flaunch.gg/base/coin/${CHAOSLP_FLAUNCH}`,
   basescan: `https://basescan.org/token/${CHAOSLP_ADDRESS}`,
   stakingBasescan: `https://basescan.org/address/${CHAOSLP_STAKING_ADDRESS}`,
   safe: `https://app.safe.global/home?safe=base:${CHAOSLP_SAFE}`,

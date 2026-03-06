@@ -8,13 +8,14 @@
   "arbme": "https://arbme.epicdylan.com",
   "contracts": {
     "chaoslp": {
-      "address": "TODO_CHAOSLP_TOKEN_ADDRESS",
+      "address": "0x8454d062506a27675706148ecdd194e45e44067a",
+      "flaunchNFT": "0x516af52d0c629b5e378da4dc64ecb0744ce10109",
       "type": "ERC20",
       "decimals": 18,
       "name": "ChaosLP",
       "symbol": "CHAOSLP",
-      "flaunch": "https://www.flaunch.gg/base/coin/TODO_CHAOSLP_TOKEN_ADDRESS",
-      "basescan": "https://basescan.org/token/TODO_CHAOSLP_TOKEN_ADDRESS"
+      "flaunch": "https://www.flaunch.gg/base/coin/0x516af52d0c629b5e378da4dc64ecb0744ce10109",
+      "basescan": "https://basescan.org/token/0x8454d062506a27675706148ecdd194e45e44067a"
     },
     "stakingHub": {
       "address": "TODO_STAKING_HUB_ADDRESS",
@@ -24,26 +25,26 @@
       "basescan": "https://basescan.org/address/TODO_STAKING_HUB_ADDRESS"
     },
     "safe": {
-      "address": "TODO_SAFE_ADDRESS",
+      "address": "0xb7DD467A573809218aAE30EB2c60e8AE3a9198a0",
       "type": "GnosisSafe",
       "description": "ChaosLP treasury. Holds LP positions, distributes fees to gauges weekly.",
-      "safe": "https://app.safe.global/home?safe=base:TODO_SAFE_ADDRESS"
+      "safe": "https://app.safe.global/home?safe=base:0xb7DD467A573809218aAE30EB2c60e8AE3a9198a0"
     }
   },
   "pools": [
     { "pair": "CHAOSLP / ARBME", "fee": "3%", "tickSpacing": 600, "role": "Bridge to ArbMe ecosystem" },
-    { "pair": "CHAOSLP / USDC", "fee": "0.05%", "tickSpacing": 10, "role": "Stable gateway" },
+    { "pair": "CHAOSLP / USDC", "fee": "3%", "tickSpacing": 600, "role": "Stable gateway" },
     { "pair": "CHAOSLP / FLAY", "fee": "3%", "tickSpacing": 600, "role": "Flaunch ecosystem" }
   ],
   "gauges": [
-    { "symbol": "CHAOSLP", "tokenAddress": "TODO_CHAOSLP_TOKEN_ADDRESS", "gaugeAddress": "TODO_CHAOSLP_GAUGE", "decimals": 18, "pool": "Hub Reward", "status": "pending" },
+    { "symbol": "CHAOSLP", "tokenAddress": "0x8454d062506a27675706148ecdd194e45e44067a", "gaugeAddress": "TODO_CHAOSLP_GAUGE", "decimals": 18, "pool": "Hub Reward", "status": "pending" },
     { "symbol": "ARBME", "tokenAddress": "0xC647421C5Dc78D1c3960faA7A33f9aEFDF4B7B07", "gaugeAddress": "TODO_ARBME_GAUGE", "decimals": 18, "pool": "CHAOSLP / ARBME", "status": "pending" },
     { "symbol": "USDC", "tokenAddress": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913", "gaugeAddress": "TODO_USDC_GAUGE", "decimals": 6, "pool": "CHAOSLP / USDC", "status": "pending" },
     { "symbol": "FLAY", "tokenAddress": "0xf1a7000000950c7ad8aff13118bb7ab561a448ee", "gaugeAddress": "TODO_FLAY_GAUGE", "decimals": 18, "pool": "CHAOSLP / FLAY", "status": "pending" }
   ],
   "links": {
-    "flaunch": "https://www.flaunch.gg/base/coin/TODO_CHAOSLP_TOKEN_ADDRESS",
-    "basescan": "https://basescan.org/token/TODO_CHAOSLP_TOKEN_ADDRESS",
+    "flaunch": "https://www.flaunch.gg/base/coin/0x516af52d0c629b5e378da4dc64ecb0744ce10109",
+    "basescan": "https://basescan.org/token/0x8454d062506a27675706148ecdd194e45e44067a",
     "warpcast": "https://warpcast.com/abc-alpha",
     "arbme": "https://arbme.epicdylan.com"
   }
