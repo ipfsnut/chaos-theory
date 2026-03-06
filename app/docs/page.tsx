@@ -1,9 +1,9 @@
 import type { Metadata } from 'next'
-import { CHAOS_ADDRESS, CHAOS_STAKING_ADDRESS, CHAOS_FOUNDATION_MULTISIG, CHAOS_GAUGES, LINKS } from '@/utils/constants'
+import { CHAOSLP_ADDRESS, CHAOSLP_STAKING_ADDRESS, CHAOSLP_SAFE, CHAOSLP_GAUGES, LINKS } from '@/utils/constants'
 
 export const metadata: Metadata = {
   title: 'Docs',
-  description: 'ChaosTheory documentation — tokenomics, staking mechanics, governance, and pool architecture.',
+  description: 'ChaosLP documentation — tokenomics, staking mechanics, and pool architecture.',
 }
 
 export default function DocsPage() {
@@ -12,50 +12,51 @@ export default function DocsPage() {
       <div className="section-header">
         <h2>Documentation</h2>
         <p className="section-desc">
-          Tokenomics, staking mechanics, governance, and pool architecture for the CHAOS Rails ecosystem.
+          How ChaosLP works. Buy it, stake it or LP it, earn from three pools.
         </p>
       </div>
 
-      <h2 id="tokenomics">Tokenomics</h2>
+      <h2 id="overview">Overview</h2>
       <p>
-        <strong>$CHAOS</strong> is the hub token of the CHAOS Rails network. It was launched on Base via{' '}
-        <a href={LINKS.flaunch} target="_blank" rel="noopener noreferrer">Flaunch</a> with an 80% creator fee split.
-        The creator share goes to the Memestream NFT holder (ID 7432). The community share feeds the{' '}
-        <strong>Progressive Bid Wall (PBW)</strong> — autonomous buy-side support that trails price.
+        <strong>ChaosLP</strong> is a coordination asset on Base, launched via{' '}
+        <a href={LINKS.flaunch} target="_blank" rel="noopener noreferrer">Flaunch</a>.
+        It serves as ArbMe&apos;s high-risk pair token &mdash; degen tokens pair against ChaosLP,
+        which routes through ARBME into the broader ecosystem.
       </p>
-      <h3>Key Mechanics</h3>
-      <ul>
-        <li><strong>Progressive Bid Wall (PBW):</strong> Uniswap V4 hook that places a limit buy below market price. Triggers at 0.1 ETH of accumulated community fees. Fully autonomous.</li>
-        <li><strong>Internal Swap Pool (ISP):</strong> Converts token-side fees to ETH by intercepting buys. No sell pressure from fee conversion.</li>
-        <li><strong>Fee asymmetry:</strong> Both buys and sells generate fees, but fees are only deployed as buy-side support.</li>
-      </ul>
+      <p>
+        80% of Flaunch trading fees go to the ChaosLP Safe (treasury). 20% goes to the community
+        share, funding the <strong>Progressive Bid Wall</strong> &mdash; autonomous buy-side support
+        that creates a rising price floor.
+      </p>
 
-      <h3>Supply</h3>
+      <h2 id="how-to-earn">How to Earn</h2>
+      <h3>Option 1: Stake</h3>
       <p>
-        $CHAOS has a fixed supply. Supply reduction comes from staking — tokens locked in the staking hub are removed
-        from the trading float, increasing the effectiveness of every wall deployment.
+        Buy ChaosLP and stake it. You earn four tokens automatically from LP fee revenue:
+        CHAOSLP, ARBME, USDC, and FLAY. One transaction to claim all rewards.
       </p>
+      <ol>
+        <li><strong>Buy</strong> ChaosLP on <a href={LINKS.flaunch} target="_blank" rel="noopener noreferrer">Flaunch</a></li>
+        <li><strong>Approve</strong> the staking hub to spend your ChaosLP</li>
+        <li><strong>Stake</strong> your ChaosLP</li>
+        <li><strong>Claim</strong> rewards anytime with <code>getReward()</code></li>
+      </ol>
+
+      <h3>Option 2: LP</h3>
+      <p>
+        Provide liquidity in any ChaosLP pool on Uniswap V4. You earn trading fees directly from swaps.
+        Higher risk than staking, but direct fee exposure.
+      </p>
+      <ul>
+        <li><strong>CHAOSLP / ARBME</strong> &mdash; 3% fee, high volume from degen routing</li>
+        <li><strong>CHAOSLP / USDC</strong> &mdash; 3% fee, stable gateway</li>
+        <li><strong>CHAOSLP / FLAY</strong> &mdash; 3% fee, Flaunch ecosystem</li>
+      </ul>
 
       <h2 id="staking">Staking Mechanics</h2>
       <p>
-        The CHAOS staking system uses a <strong>hub-and-spoke</strong> architecture. One hub contract, seven gauge (spoke)
-        contracts. Stake CHAOS to the hub once, and you automatically earn from all active gauges.
-      </p>
-
-      <h3>How It Works</h3>
-      <ol>
-        <li><strong>Approve</strong> — Allow the staking hub to spend your CHAOS tokens</li>
-        <li><strong>Stake</strong> — Deposit CHAOS into the staking hub</li>
-        <li><strong>Earn</strong> — Rewards accumulate from all active gauges (no action needed)</li>
-        <li><strong>Claim</strong> — <code>getReward()</code> claims all hub + spoke rewards in one transaction</li>
-        <li><strong>Exit</strong> — <code>exit()</code> withdraws all staked tokens and claims all rewards</li>
-      </ol>
-
-      <h3>Reward Streams</h3>
-      <p>
-        Each gauge distributes a different token over a <strong>180-day rolling window</strong>. The Foundation
-        deposits reward tokens weekly. Each deposit restarts the 180-day countdown for that gauge,
-        ensuring continuous distribution.
+        Hub-and-spoke architecture. One hub contract, four gauge contracts.
+        Stake ChaosLP to the hub once, earn from all active gauges automatically.
       </p>
 
       <h3>Gauges</h3>
@@ -63,22 +64,20 @@ export default function DocsPage() {
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 'var(--text-sm)' }}>
           <thead>
             <tr style={{ borderBottom: '1px solid var(--border)' }}>
-              <th style={{ textAlign: 'left', padding: '0.5rem', color: 'var(--text-muted)' }}>Week</th>
               <th style={{ textAlign: 'left', padding: '0.5rem', color: 'var(--text-muted)' }}>Token</th>
-              <th style={{ textAlign: 'left', padding: '0.5rem', color: 'var(--text-muted)' }}>Pool</th>
+              <th style={{ textAlign: 'left', padding: '0.5rem', color: 'var(--text-muted)' }}>Source</th>
               <th style={{ textAlign: 'left', padding: '0.5rem', color: 'var(--text-muted)' }}>Status</th>
             </tr>
           </thead>
           <tbody>
-            {CHAOS_GAUGES.map(g => (
+            {CHAOSLP_GAUGES.map(g => (
               <tr key={g.symbol} style={{ borderBottom: '1px solid var(--border)' }}>
-                <td style={{ padding: '0.5rem' }}>{g.week}</td>
                 <td style={{ padding: '0.5rem', fontWeight: 600 }}>{g.symbol}</td>
                 <td style={{ padding: '0.5rem', color: 'var(--text-secondary)' }}>{g.pool}</td>
                 <td style={{ padding: '0.5rem' }}>
-                  {g.gaugeAddress === '0x0000000000000000000000000000000000000000'
+                  {g.gaugeAddress.startsWith('TODO')
                     ? <span style={{ color: 'var(--warning)' }}>Pending</span>
-                    : <span style={{ color: 'var(--positive)' }}>Deployed</span>
+                    : <span style={{ color: 'var(--positive)' }}>Live</span>
                   }
                 </td>
               </tr>
@@ -87,58 +86,39 @@ export default function DocsPage() {
         </table>
       </div>
 
-      <h2 id="governance">Governance</h2>
+      <h3>Reward Streams</h3>
       <p>
-        ChaosTheory uses a <strong>competing multisig</strong> model. The first multisig (abc-alpha Foundation) manages
-        the initial 7-pair portfolio. Future multisigs can be deployed by any operator — each competes for CHAOS
-        stakers by offering differentiated LP portfolios and risk profiles.
-      </p>
-      <h3>Foundation Multisig</h3>
-      <p>
-        <a href={LINKS.multisig} target="_blank" rel="noopener noreferrer">
-          {CHAOS_FOUNDATION_MULTISIG}
-        </a>
-      </p>
-      <p>
-        The Foundation controls reward token deposits to gauges and manages LP positions across 7 CHAOS pairs.
-        All LP positions are visible on-chain via the multisig address.
+        Each gauge distributes rewards over a <strong>180-day rolling window</strong>. The Safe
+        deposits fee revenue weekly. Each deposit restarts the countdown, ensuring continuous distribution.
+        No emissions, no inflation &mdash; rewards come from real LP trading fees.
       </p>
 
-      <h3>$RATCHET Operator Incentives</h3>
+      <h2 id="progressive-bid-wall">Progressive Bid Wall</h2>
       <p>
-        100,000,000 $RATCHET per week from a pre-allocated treasury, distributed proportionally to multisigs
-        based on $CHAOS staked. Self-staking is allowed — it represents skin in the game.
+        Flaunch&apos;s V4 hook places a limit buy order below market price. It repositions upward as price rises.
+        Triggers at 0.1 ETH of accumulated community fees. Token-side fees are converted to ETH via
+        the Internal Swap Pool without sell pressure.
       </p>
-
-      <h2 id="pool-architecture">Pool Architecture</h2>
       <p>
-        Seven CHAOS pairs create 21 potential arbitrage routes. Each pair is a surface where price information
-        gets expressed and reconciled through trading activity. The combinatorial scaling formula:
+        Staking amplifies the PBW: staked tokens are removed from the float, so each wall deployment
+        absorbs more of the potential sell pressure.
       </p>
-      <div className="rails-formula" style={{ marginBottom: '1rem' }}>
-        Routes = n(n-1)/2 where n = number of pairs
-      </div>
-      <ul>
-        <li><strong>Stable pair (USDC):</strong> The system&apos;s clock — anchors CHAOS to dollar value</li>
-        <li><strong>Ecosystem pairs (ARBME, MLTL):</strong> Bidirectional information flow — each token&apos;s volatility becomes volume for both</li>
-        <li><strong>Cross-community pairs (OSO, Cnews, ALPHACLAW, RATCHET):</strong> Expands the topology</li>
-      </ul>
 
       <h2 id="contracts">Contract Addresses</h2>
       <div style={{ display: 'grid', gap: 'var(--spacing-sm)' }}>
         <div className="address-card">
-          <div className="address-label">$CHAOS Token</div>
-          <a href={LINKS.basescan} target="_blank" rel="noopener noreferrer" className="address-value">{CHAOS_ADDRESS}</a>
+          <div className="address-label">$CHAOSLP Token</div>
+          <a href={LINKS.basescan} target="_blank" rel="noopener noreferrer" className="address-value">{CHAOSLP_ADDRESS}</a>
         </div>
         <div className="address-card">
           <div className="address-label">Staking Hub</div>
-          <a href={LINKS.stakingBasescan} target="_blank" rel="noopener noreferrer" className="address-value">{CHAOS_STAKING_ADDRESS}</a>
+          <a href={LINKS.stakingBasescan} target="_blank" rel="noopener noreferrer" className="address-value">{CHAOSLP_STAKING_ADDRESS}</a>
         </div>
         <div className="address-card">
-          <div className="address-label">Foundation Multisig</div>
-          <a href={LINKS.multisig} target="_blank" rel="noopener noreferrer" className="address-value">{CHAOS_FOUNDATION_MULTISIG}</a>
+          <div className="address-label">ChaosLP Safe</div>
+          <a href={LINKS.safe} target="_blank" rel="noopener noreferrer" className="address-value">{CHAOSLP_SAFE}</a>
         </div>
-        {CHAOS_GAUGES.filter(g => g.gaugeAddress !== '0x0000000000000000000000000000000000000000').map(g => (
+        {CHAOSLP_GAUGES.filter(g => !g.gaugeAddress.startsWith('TODO')).map(g => (
           <div key={g.symbol} className="address-card">
             <div className="address-label">{g.symbol} Gauge</div>
             <a href={`https://basescan.org/address/${g.gaugeAddress}`} target="_blank" rel="noopener noreferrer" className="address-value">{g.gaugeAddress}</a>

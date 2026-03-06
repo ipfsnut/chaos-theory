@@ -7,46 +7,35 @@ import './globals.css'
 export const metadata: Metadata = {
   metadataBase: new URL('https://chaos-theory.epicdylan.com'),
   title: {
-    default: 'ChaosTheory — CHAOS Rails Infrastructure',
-    template: '%s | ChaosTheory',
+    default: 'Chaos Theory — $CHAOSLP',
+    template: '%s | Chaos Theory',
   },
-  description: 'Stake $CHAOS once, earn 7 tokens. Infrastructure for moving price information across Ethereum via arbitrage surfaces and the Progressive Bid Wall.',
+  description: 'Home of $CHAOSLP. High-risk coordination asset for ArbMe. Stake it or LP it. Earn from three pools on Base.',
   openGraph: {
-    title: 'ChaosTheory — CHAOS Rails Infrastructure',
-    description: 'Stake $CHAOS once, earn 7 tokens. 180-day rolling streams from LP fees across 7 CHAOS pairs on Base.',
+    title: 'Chaos Theory — $CHAOSLP',
+    description: 'Home of $CHAOSLP. High-risk coordination asset for ArbMe. Stake it or LP it. Earn from three pools on Base.',
     url: 'https://chaos-theory.epicdylan.com',
-    siteName: 'ChaosTheory',
+    siteName: 'Chaos Theory',
     type: 'website',
   },
   twitter: {
     card: 'summary',
-    title: 'ChaosTheory — CHAOS Rails Infrastructure',
-    description: 'Stake $CHAOS once, earn 7 tokens. Infrastructure for moving price information across Ethereum.',
-  },
-  other: {
-    'application-name': 'ChaosTheory',
+    title: 'Chaos Theory — $CHAOSLP',
+    description: 'Home of $CHAOSLP. High-risk coordination asset for ArbMe. Stake it or LP it. Earn from three pools on Base.',
   },
 }
 
-// JSON-LD structured data for machine readability
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
-  name: 'ChaosTheory',
+  name: 'Chaos Theory',
   url: 'https://chaos-theory.epicdylan.com',
-  description: 'Infrastructure for moving price information across Ethereum. Stake $CHAOS, earn 7 tokens via 180-day rolling LP fee streams.',
+  description: 'Home of $CHAOSLP. High-risk coordination asset for ArbMe. Hold chaos, swap for deals during market turbulence.',
   applicationCategory: 'DeFi',
   operatingSystem: 'Web',
-  offers: {
-    '@type': 'Offer',
-    description: 'CHAOS staking with multi-token rewards',
-    price: '0',
-    priceCurrency: 'USD',
-  },
   creator: {
     '@type': 'Organization',
-    name: 'ChaosTheory Foundation',
-    url: 'https://abc-alpha.epicdylan.com',
+    name: 'Chaos Theory',
   },
 }
 

@@ -11,20 +11,20 @@
    ═══════════════════════════════════════════════════════════════════════════════ */
 
 :root {
-  /* Meridian Terminal — Black & Green */
+  /* Meridian Terminal — Black & Terminal Green (matched to logo) */
   --bg-primary: #090B0A;
   --bg-secondary: #0F1210;
-  --bg-card: rgba(0, 255, 157, 0.03);
+  --bg-card: rgba(0, 255, 51, 0.03);
   --bg-card-solid: #161A18;
   --border: #1B211E;
-  --border-active: #00FF9D;
+  --border-active: #00FF33;
   --text-primary: #ECF0ED;
   --text-secondary: #9AA7A0;
   --text-muted: #6C7A73;
-  --accent: #00D98A;
-  --accent-dim: #00C07A;
-  --accent-glow: rgba(0, 217, 138, 0.10);
-  --positive: #00FF9D;
+  --accent: #00FF33;
+  --accent-dim: #00DD2B;
+  --accent-glow: rgba(0, 255, 51, 0.10);
+  --positive: #00FF33;
   --negative: #FF6B6B;
   --warning: #FFD057;
 

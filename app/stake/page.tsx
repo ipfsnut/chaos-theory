@@ -5,36 +5,13 @@ import { useAccount, useSendTransaction } from 'wagmi'
 import { createPublicClient, http, fallback, formatUnits, encodeFunctionData, maxUint256 } from 'viem'
 import { base } from 'viem/chains'
 import {
-  CHAOS_ADDRESS,
-  CHAOS_STAKING_ADDRESS,
-  CHAOS_GAUGES,
+  CHAOSLP_ADDRESS,
+  CHAOSLP_STAKING_ADDRESS,
+  CHAOSLP_GAUGES,
   type GaugeConfig,
 } from '@/utils/constants'
 import { STAKING_ABI, GAUGE_ABI, ERC20_ABI } from '@/utils/abis'
 import { formatNumber, formatCountdown, parseToWei } from '@/utils/format'
-import snapshotData from './snapshot.json'
-
-// Build initial state from snapshot so page never shows "--" on load
-function buildInitialState(): StakingState {
-  const gauges: GaugeData[] = CHAOS_GAUGES.map(g => {
-    const snap = (snapshotData.gauges as Record<string, { rewardRate: string; periodFinish: number; status: string; inAssetApr: number }>)[g.symbol]
-    if (snap) {
-      return { ...g, rewardRate: snap.rewardRate, periodFinish: snap.periodFinish, earned: '0', inAssetApr: snap.inAssetApr, status: snap.status as 'live' | 'ended' | 'pending' }
-    }
-    return { ...g, rewardRate: '0', periodFinish: 0, earned: '0', inAssetApr: 0, status: 'pending' as const }
-  })
-  return {
-    totalStaked: snapshotData.totalStaked,
-    rewardRate: snapshotData.hubRewardRate,
-    periodFinish: snapshotData.hubPeriodFinish,
-    hubApr: snapshotData.hubApr,
-    staked: '0',
-    earned: '0',
-    allowance: '0',
-    balance: '0',
-    gauges,
-  }
-}
 
 const publicClient = createPublicClient({
   chain: base,
@@ -50,7 +27,6 @@ interface GaugeData extends GaugeConfig {
   rewardRate: string
   periodFinish: number
   earned: string
-  inAssetApr: number
   status: 'live' | 'ended' | 'pending'
 }
 
@@ -66,6 +42,23 @@ interface StakingState {
   gauges: GaugeData[]
 }
 
+function buildInitialState(): StakingState {
+  const gauges: GaugeData[] = CHAOSLP_GAUGES.map(g => ({
+    ...g, rewardRate: '0', periodFinish: 0, earned: '0', status: 'pending' as const,
+  }))
+  return {
+    totalStaked: '0',
+    rewardRate: '0',
+    periodFinish: 0,
+    hubApr: 0,
+    staked: '0',
+    earned: '0',
+    allowance: '0',
+    balance: '0',
+    gauges,
+  }
+}
+
 export default function StakePage() {
   const { address } = useAccount()
   const { sendTransactionAsync } = useSendTransaction()
@@ -79,11 +72,10 @@ export default function StakePage() {
 
   const fetchData = useCallback(async () => {
     try {
-      const stakingAddr = CHAOS_STAKING_ADDRESS as `0x${string}`
-      const chaosAddr = CHAOS_ADDRESS as `0x${string}`
+      const stakingAddr = CHAOSLP_STAKING_ADDRESS as `0x${string}`
+      const tokenAddr = CHAOSLP_ADDRESS as `0x${string}`
       const walletAddr = address as `0x${string}` | undefined
 
-      // Read hub state
       const [totalSupply, rewardRate, periodFinish] = await Promise.all([
         publicClient.readContract({ address: stakingAddr, abi: STAKING_ABI, functionName: 'totalSupply' }),
         publicClient.readContract({ address: stakingAddr, abi: STAKING_ABI, functionName: 'rewardRate' }),
@@ -92,20 +84,18 @@ export default function StakePage() {
 
       const now = Math.floor(Date.now() / 1000)
 
-      // Hub APR (CHAOS→CHAOS, no price needed)
       let hubApr = 0
       if (totalSupply > 0n && Number(periodFinish) > now) {
         hubApr = Number(rewardRate * 365n * 86400n * 100n * 10000n / totalSupply) / 10000
       }
 
-      // User data
       let staked = '0', earned = '0', allowance = '0', balance = '0'
       if (walletAddr) {
         const [s, e, a, b] = await Promise.all([
           publicClient.readContract({ address: stakingAddr, abi: STAKING_ABI, functionName: 'balanceOf', args: [walletAddr] }),
           publicClient.readContract({ address: stakingAddr, abi: STAKING_ABI, functionName: 'earned', args: [walletAddr] }),
-          publicClient.readContract({ address: chaosAddr, abi: ERC20_ABI, functionName: 'allowance', args: [walletAddr, stakingAddr] }),
-          publicClient.readContract({ address: chaosAddr, abi: ERC20_ABI, functionName: 'balanceOf', args: [walletAddr] }),
+          publicClient.readContract({ address: tokenAddr, abi: ERC20_ABI, functionName: 'allowance', args: [walletAddr, stakingAddr] }),
+          publicClient.readContract({ address: tokenAddr, abi: ERC20_ABI, functionName: 'balanceOf', args: [walletAddr] }),
         ])
         staked = s.toString()
         earned = e.toString()
@@ -113,11 +103,10 @@ export default function StakePage() {
         balance = b.toString()
       }
 
-      // Read gauges
       const gaugeData: GaugeData[] = await Promise.all(
-        CHAOS_GAUGES.map(async (g) => {
-          if (g.gaugeAddress === '0x0000000000000000000000000000000000000000') {
-            return { ...g, rewardRate: '0', periodFinish: 0, earned: '0', inAssetApr: 0, status: 'pending' as const }
+        CHAOSLP_GAUGES.map(async (g) => {
+          if (g.gaugeAddress.startsWith('TODO')) {
+            return { ...g, rewardRate: '0', periodFinish: 0, earned: '0', status: 'pending' as const }
           }
 
           const addr = g.gaugeAddress as `0x${string}`
@@ -129,20 +118,9 @@ export default function StakePage() {
               : 0n,
           ])
 
-          // Use snapshot APR (calculated at build time with price data)
-          const snapshotGauge = (snapshotData.gauges as Record<string, { inAssetApr: number }>)[g.symbol]
-          const inAssetApr = snapshotGauge?.inAssetApr ?? 0
-
           const status = Number(gPeriodFinish) > now ? 'live' : Number(gPeriodFinish) > 0 ? 'ended' : 'pending'
 
-          return {
-            ...g,
-            rewardRate: gRewardRate.toString(),
-            periodFinish: Number(gPeriodFinish),
-            earned: gEarned.toString(),
-            inAssetApr,
-            status,
-          }
+          return { ...g, rewardRate: gRewardRate.toString(), periodFinish: Number(gPeriodFinish), earned: gEarned.toString(), status }
         })
       )
 
@@ -151,10 +129,7 @@ export default function StakePage() {
         rewardRate: rewardRate.toString(),
         periodFinish: Number(periodFinish),
         hubApr,
-        staked,
-        earned,
-        allowance,
-        balance,
+        staked, earned, allowance, balance,
         gauges: gaugeData,
       })
     } catch (err) {
@@ -165,8 +140,6 @@ export default function StakePage() {
   }, [address])
 
   useEffect(() => { fetchData() }, [fetchData])
-
-  // Refresh every 30s
   useEffect(() => {
     const interval = setInterval(fetchData, 30000)
     return () => clearInterval(interval)
@@ -180,21 +153,12 @@ export default function StakePage() {
   const handleApprove = async () => {
     setActionLoading('approve'); setActionError(null)
     try {
-      const txData = encodeFunctionData({
-        abi: ERC20_ABI,
-        functionName: 'approve',
-        args: [CHAOS_STAKING_ADDRESS as `0x${string}`, maxUint256],
-      })
-      await sendTransactionAsync({
-        to: CHAOS_ADDRESS as `0x${string}`,
-        data: txData,
-      })
+      const txData = encodeFunctionData({ abi: ERC20_ABI, functionName: 'approve', args: [CHAOSLP_STAKING_ADDRESS as `0x${string}`, maxUint256] })
+      await sendTransactionAsync({ to: CHAOSLP_ADDRESS as `0x${string}`, data: txData })
       await waitAndRefresh()
     } catch (e: unknown) {
       setActionError(e instanceof Error ? e.message : 'Approval failed')
-    } finally {
-      setActionLoading(null)
-    }
+    } finally { setActionLoading(null) }
   }
 
   const handleStake = async () => {
@@ -202,22 +166,13 @@ export default function StakePage() {
     if (amount === '0') return
     setActionLoading('stake'); setActionError(null)
     try {
-      const txData = encodeFunctionData({
-        abi: STAKING_ABI,
-        functionName: 'stake',
-        args: [BigInt(amount)],
-      })
-      await sendTransactionAsync({
-        to: CHAOS_STAKING_ADDRESS as `0x${string}`,
-        data: txData,
-      })
+      const txData = encodeFunctionData({ abi: STAKING_ABI, functionName: 'stake', args: [BigInt(amount)] })
+      await sendTransactionAsync({ to: CHAOSLP_STAKING_ADDRESS as `0x${string}`, data: txData })
       setStakeAmount('')
       await waitAndRefresh()
     } catch (e: unknown) {
       setActionError(e instanceof Error ? e.message : 'Stake failed')
-    } finally {
-      setActionLoading(null)
-    }
+    } finally { setActionLoading(null) }
   }
 
   const handleWithdraw = async () => {
@@ -225,78 +180,41 @@ export default function StakePage() {
     if (amount === '0') return
     setActionLoading('withdraw'); setActionError(null)
     try {
-      const txData = encodeFunctionData({
-        abi: STAKING_ABI,
-        functionName: 'withdraw',
-        args: [BigInt(amount)],
-      })
-      await sendTransactionAsync({
-        to: CHAOS_STAKING_ADDRESS as `0x${string}`,
-        data: txData,
-      })
+      const txData = encodeFunctionData({ abi: STAKING_ABI, functionName: 'withdraw', args: [BigInt(amount)] })
+      await sendTransactionAsync({ to: CHAOSLP_STAKING_ADDRESS as `0x${string}`, data: txData })
       setWithdrawAmount('')
       await waitAndRefresh()
     } catch (e: unknown) {
       setActionError(e instanceof Error ? e.message : 'Withdraw failed')
-    } finally {
-      setActionLoading(null)
-    }
+    } finally { setActionLoading(null) }
   }
 
   const handleClaim = async () => {
     setActionLoading('claim'); setActionError(null)
     try {
-      const txData = encodeFunctionData({
-        abi: STAKING_ABI,
-        functionName: 'getReward',
-      })
-      await sendTransactionAsync({
-        to: CHAOS_STAKING_ADDRESS as `0x${string}`,
-        data: txData,
-      })
+      const txData = encodeFunctionData({ abi: STAKING_ABI, functionName: 'getReward' })
+      await sendTransactionAsync({ to: CHAOSLP_STAKING_ADDRESS as `0x${string}`, data: txData })
       await waitAndRefresh()
     } catch (e: unknown) {
       setActionError(e instanceof Error ? e.message : 'Claim failed')
-    } finally {
-      setActionLoading(null)
-    }
+    } finally { setActionLoading(null) }
   }
 
   const handleExit = async () => {
     setActionLoading('exit'); setActionError(null)
     try {
-      const txData = encodeFunctionData({
-        abi: STAKING_ABI,
-        functionName: 'exit',
-      })
-      await sendTransactionAsync({
-        to: CHAOS_STAKING_ADDRESS as `0x${string}`,
-        data: txData,
-      })
+      const txData = encodeFunctionData({ abi: STAKING_ABI, functionName: 'exit' })
+      await sendTransactionAsync({ to: CHAOSLP_STAKING_ADDRESS as `0x${string}`, data: txData })
       await waitAndRefresh()
     } catch (e: unknown) {
       setActionError(e instanceof Error ? e.message : 'Exit failed')
-    } finally {
-      setActionLoading(null)
-    }
+    } finally { setActionLoading(null) }
   }
 
-  // Derived
-  const needsApproval = data
-    ? BigInt(data.allowance) < BigInt(parseToWei(stakeAmount || '0'))
-    : false
-
-  const gauges = data?.gauges || CHAOS_GAUGES.map(g => ({
-    ...g, rewardRate: '0', periodFinish: 0, earned: '0', inAssetApr: 0, status: 'pending' as const,
-  }))
-
-  const setMaxStake = () => {
-    if (data) setStakeAmount(formatUnits(BigInt(data.balance), 18))
-  }
-
-  const setMaxWithdraw = () => {
-    if (data) setWithdrawAmount(formatUnits(BigInt(data.staked), 18))
-  }
+  const needsApproval = data ? BigInt(data.allowance) < BigInt(parseToWei(stakeAmount || '0')) : false
+  const gauges = data?.gauges || CHAOSLP_GAUGES.map(g => ({ ...g, rewardRate: '0', periodFinish: 0, earned: '0', status: 'pending' as const }))
+  const setMaxStake = () => { if (data) setStakeAmount(formatUnits(BigInt(data.balance), 18)) }
+  const setMaxWithdraw = () => { if (data) setWithdrawAmount(formatUnits(BigInt(data.staked), 18)) }
 
   if (loading) {
     return (
@@ -310,9 +228,9 @@ export default function StakePage() {
   return (
     <>
       <div className="section-header">
-        <h2>Stake $CHAOS</h2>
+        <h2>Stake ChaosLP</h2>
         <p className="section-desc">
-          Stake once. Earn 7 tokens. 180-day rolling streams from LP fees across 7 CHAOS pairs.
+          Stake once. Earn four tokens. Fee revenue from three ChaosLP pools, distributed via 180-day rolling streams.
         </p>
       </div>
 
@@ -324,11 +242,11 @@ export default function StakePage() {
         </div>
         <div className="stat-card">
           <span className="stat-label">Hub APR</span>
-          <span className="stat-value">{data ? (data.hubApr > 0 ? `${data.hubApr.toFixed(1)}%` : '—') : '--'}</span>
+          <span className="stat-value">{data ? (data.hubApr > 0 ? `${data.hubApr.toFixed(1)}%` : '--') : '--'}</span>
         </div>
         <div className="stat-card">
           <span className="stat-label">Active Gauges</span>
-          <span className="stat-value">{gauges.filter(g => g.status === 'live').length} / 7</span>
+          <span className="stat-value">{gauges.filter(g => g.status === 'live').length} / 4</span>
         </div>
       </div>
 
@@ -347,16 +265,10 @@ export default function StakePage() {
               <span className="gauge-stat-value">{g.pool}</span>
             </div>
             {g.status === 'live' && (
-              <>
-                <div className="gauge-stat">
-                  <span className="gauge-stat-label">APR</span>
-                  <span className="gauge-stat-value">{g.inAssetApr > 0 ? `${g.inAssetApr.toFixed(1)}%` : '—'}</span>
-                </div>
-                <div className="gauge-stat">
-                  <span className="gauge-stat-label">Remaining</span>
-                  <span className="gauge-stat-value">{formatCountdown(g.periodFinish)}</span>
-                </div>
-              </>
+              <div className="gauge-stat">
+                <span className="gauge-stat-label">Remaining</span>
+                <span className="gauge-stat-value">{formatCountdown(g.periodFinish)}</span>
+              </div>
             )}
             {address && g.status === 'live' && BigInt(g.earned) > 0n && (
               <div className="gauge-stat">
@@ -380,12 +292,12 @@ export default function StakePage() {
           <div className="staking-user-info">
             <div className="user-stat">
               <span className="user-stat-label">Your Stake</span>
-              <span className="user-stat-value">{formatNumber(data?.staked || '0')} CHAOS</span>
+              <span className="user-stat-value">{formatNumber(data?.staked || '0')} CHAOSLP</span>
             </div>
             {data && BigInt(data.earned) > 0n && (
               <div className="user-stat">
-                <span className="user-stat-label">CHAOS Earned</span>
-                <span className="user-stat-value text-positive">{formatNumber(data.earned)} CHAOS</span>
+                <span className="user-stat-label">CHAOSLP Earned</span>
+                <span className="user-stat-value text-positive">{formatNumber(data.earned)} CHAOSLP</span>
               </div>
             )}
             {gauges.filter(g => g.status === 'live' && BigInt(g.earned) > 0n).map(g => (
@@ -396,7 +308,7 @@ export default function StakePage() {
             ))}
             <div className="user-stat">
               <span className="user-stat-label">Wallet Balance</span>
-              <span className="user-stat-value">{formatNumber(data?.balance || '0')} CHAOS</span>
+              <span className="user-stat-value">{formatNumber(data?.balance || '0')} CHAOSLP</span>
             </div>
           </div>
 
@@ -410,17 +322,12 @@ export default function StakePage() {
             <div className="input-group">
               <div className="input-label">
                 <span>Amount</span>
-                <span className="input-balance" onClick={setMaxStake}>
-                  Balance: {formatNumber(data?.balance || '0')}
-                </span>
+                <span className="input-balance" onClick={setMaxStake}>Balance: {formatNumber(data?.balance || '0')}</span>
               </div>
               <div className="input-wrapper">
-                <input
-                  type="number" className="amount-input" placeholder="0.00"
-                  value={stakeAmount} onChange={e => setStakeAmount(e.target.value)}
-                  min="0" step="any"
-                />
-                <div className="input-token">CHAOS</div>
+                <input type="number" className="amount-input" placeholder="0.00"
+                  value={stakeAmount} onChange={e => setStakeAmount(e.target.value)} min="0" step="any" />
+                <div className="input-token">CHAOSLP</div>
               </div>
             </div>
             <div className="action-buttons">
@@ -444,17 +351,12 @@ export default function StakePage() {
             <div className="input-group">
               <div className="input-label">
                 <span>Amount</span>
-                <span className="input-balance" onClick={setMaxWithdraw}>
-                  Staked: {formatNumber(data?.staked || '0')}
-                </span>
+                <span className="input-balance" onClick={setMaxWithdraw}>Staked: {formatNumber(data?.staked || '0')}</span>
               </div>
               <div className="input-wrapper">
-                <input
-                  type="number" className="amount-input" placeholder="0.00"
-                  value={withdrawAmount} onChange={e => setWithdrawAmount(e.target.value)}
-                  min="0" step="any"
-                />
-                <div className="input-token">CHAOS</div>
+                <input type="number" className="amount-input" placeholder="0.00"
+                  value={withdrawAmount} onChange={e => setWithdrawAmount(e.target.value)} min="0" step="any" />
+                <div className="input-token">CHAOSLP</div>
               </div>
             </div>
             <div className="action-buttons">
@@ -478,7 +380,7 @@ export default function StakePage() {
               {data && BigInt(data.earned) > 0n && (
                 <div className="rewards-row">
                   <span className="rewards-amount">{formatNumber(data.earned)}</span>
-                  <span className="rewards-token">CHAOS (hub)</span>
+                  <span className="rewards-token">CHAOSLP (hub)</span>
                 </div>
               )}
               {gauges.filter(g => g.status === 'live').length === 0 && (!data || BigInt(data.earned) === 0n) && (

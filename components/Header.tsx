@@ -10,6 +10,7 @@ const NAV_LINKS = [
   { href: '/docs', label: 'Docs' },
   { href: '/blog', label: 'Blog' },
   { href: '/stake', label: 'Stake' },
+  { href: '/legacy-stake', label: 'Old CHAOS' },
 ]
 
 export function Header() {
