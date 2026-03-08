@@ -27,6 +27,7 @@ interface GaugeData extends GaugeConfig {
   rewardRate: string
   periodFinish: number
   earned: string
+  apr: number
   status: 'live' | 'ended' | 'pending'
 }
 
@@ -44,7 +45,7 @@ interface StakingState {
 
 function buildInitialState(): StakingState {
   const gauges: GaugeData[] = CHAOSLP_GAUGES.map(g => ({
-    ...g, rewardRate: '0', periodFinish: 0, earned: '0', status: 'pending' as const,
+    ...g, rewardRate: '0', periodFinish: 0, earned: '0', apr: 0, status: 'pending' as const,
   }))
   return {
     totalStaked: '0',
@@ -56,6 +57,27 @@ function buildInitialState(): StakingState {
     allowance: '0',
     balance: '0',
     gauges,
+  }
+}
+
+/** Fetch USD prices for multiple tokens from GeckoTerminal */
+async function fetchTokenPrices(addresses: string[]): Promise<Record<string, number>> {
+  try {
+    const joined = addresses.map(a => a.toLowerCase()).join('%2C')
+    const res = await fetch(
+      `https://api.geckoterminal.com/api/v2/simple/networks/base/token_price/${joined}`,
+      { headers: { Accept: 'application/json' } }
+    )
+    if (!res.ok) return {}
+    const json = await res.json() as { data?: { attributes?: { token_prices?: Record<string, string> } } }
+    const prices: Record<string, number> = {}
+    const raw = json.data?.attributes?.token_prices || {}
+    for (const [addr, price] of Object.entries(raw)) {
+      prices[addr.toLowerCase()] = parseFloat(price) || 0
+    }
+    return prices
+  } catch {
+    return {}
   }
 }
 
@@ -76,13 +98,20 @@ export default function StakePage() {
       const tokenAddr = CHAOSLP_ADDRESS as `0x${string}`
       const walletAddr = address as `0x${string}` | undefined
 
-      const [totalSupply, rewardRate, periodFinish] = await Promise.all([
-        publicClient.readContract({ address: stakingAddr, abi: STAKING_ABI, functionName: 'totalSupply' }),
-        publicClient.readContract({ address: stakingAddr, abi: STAKING_ABI, functionName: 'rewardRate' }),
-        publicClient.readContract({ address: stakingAddr, abi: STAKING_ABI, functionName: 'periodFinish' }),
+      // Fetch on-chain data and token prices in parallel
+      const allTokenAddrs = [CHAOSLP_ADDRESS, ...CHAOSLP_GAUGES.map(g => g.tokenAddress)]
+      const [contractData, prices] = await Promise.all([
+        Promise.all([
+          publicClient.readContract({ address: stakingAddr, abi: STAKING_ABI, functionName: 'totalSupply' }),
+          publicClient.readContract({ address: stakingAddr, abi: STAKING_ABI, functionName: 'rewardRate' }),
+          publicClient.readContract({ address: stakingAddr, abi: STAKING_ABI, functionName: 'periodFinish' }),
+        ]),
+        fetchTokenPrices(allTokenAddrs),
       ])
 
+      const [totalSupply, rewardRate, periodFinish] = contractData
       const now = Math.floor(Date.now() / 1000)
+      const chaoslpPrice = prices[CHAOSLP_ADDRESS.toLowerCase()] || 0
 
       let hubApr = 0
       if (totalSupply > 0n && Number(periodFinish) > now) {
@@ -103,10 +132,12 @@ export default function StakePage() {
         balance = b.toString()
       }
 
+      const totalSupplyFloat = Number(formatUnits(totalSupply, 18))
+
       const gaugeData: GaugeData[] = await Promise.all(
         CHAOSLP_GAUGES.map(async (g) => {
           if (g.gaugeAddress === '0x0000000000000000000000000000000000000000') {
-            return { ...g, rewardRate: '0', periodFinish: 0, earned: '0', status: 'pending' as const }
+            return { ...g, rewardRate: '0', periodFinish: 0, earned: '0', apr: 0, status: 'pending' as const }
           }
 
           const addr = g.gaugeAddress as `0x${string}`
@@ -120,7 +151,15 @@ export default function StakePage() {
 
           const status = Number(gPeriodFinish) > now ? 'live' : Number(gPeriodFinish) > 0 ? 'ended' : 'pending'
 
-          return { ...g, rewardRate: gRewardRate.toString(), periodFinish: Number(gPeriodFinish), earned: gEarned.toString(), status }
+          // Calculate USD-based APR: (annualRewardTokens * rewardPrice) / (totalStaked * chaoslpPrice) * 100
+          let apr = 0
+          const rewardPrice = prices[g.tokenAddress.toLowerCase()] || 0
+          if (totalSupplyFloat > 0 && chaoslpPrice > 0 && rewardPrice > 0 && Number(gPeriodFinish) > now) {
+            const annualTokens = Number(formatUnits(gRewardRate * 365n * 86400n, g.decimals))
+            apr = (annualTokens * rewardPrice) / (totalSupplyFloat * chaoslpPrice) * 100
+          }
+
+          return { ...g, rewardRate: gRewardRate.toString(), periodFinish: Number(gPeriodFinish), earned: gEarned.toString(), apr, status }
         })
       )
 
@@ -214,7 +253,10 @@ export default function StakePage() {
   }
 
   const needsApproval = data ? BigInt(data.allowance) < BigInt(parseToWei(stakeAmount || '0')) : false
-  const gauges = data?.gauges || CHAOSLP_GAUGES.map(g => ({ ...g, rewardRate: '0', periodFinish: 0, earned: '0', status: 'pending' as const }))
+  const gauges = data?.gauges || CHAOSLP_GAUGES.map(g => ({ ...g, rewardRate: '0', periodFinish: 0, earned: '0', apr: 0, status: 'pending' as const }))
+  // Spoke gauges only (exclude CHAOSLP hub to avoid duplicate display)
+  const spokeGauges = gauges.filter(g => g.symbol !== 'CHAOSLP')
+  const totalApr = (data?.hubApr || 0) + spokeGauges.reduce((sum, g) => sum + g.apr, 0)
   const setMaxStake = () => { if (data) setStakeAmount(formatUnits(BigInt(data.balance), 18)) }
   const setMaxWithdraw = () => { if (data) setWithdrawAmount(formatUnits(BigInt(data.staked), 18)) }
 
@@ -243,8 +285,8 @@ export default function StakePage() {
           <span className="stat-value">{data ? formatNumber(data.totalStaked) : '--'}</span>
         </div>
         <div className="stat-card">
-          <span className="stat-label">Hub APR</span>
-          <span className="stat-value">{data ? (data.hubApr > 0 ? `${data.hubApr.toFixed(1)}%` : '--') : '--'}</span>
+          <span className="stat-label">Total APR</span>
+          <span className="stat-value">{totalApr > 0 ? `${totalApr.toFixed(1)}%` : '--'}</span>
         </div>
         <div className="stat-card">
           <span className="stat-label">Active Gauges</span>
@@ -267,10 +309,16 @@ export default function StakePage() {
               <span className="gauge-stat-value">{g.pool}</span>
             </div>
             {g.status === 'live' && (
-              <div className="gauge-stat">
-                <span className="gauge-stat-label">Remaining</span>
-                <span className="gauge-stat-value">{formatCountdown(g.periodFinish)}</span>
-              </div>
+              <>
+                <div className="gauge-stat">
+                  <span className="gauge-stat-label">APR</span>
+                  <span className="gauge-stat-value">{g.apr > 0 ? `${g.apr.toFixed(1)}%` : '--'}</span>
+                </div>
+                <div className="gauge-stat">
+                  <span className="gauge-stat-label">Remaining</span>
+                  <span className="gauge-stat-value">{formatCountdown(g.periodFinish)}</span>
+                </div>
+              </>
             )}
             {address && g.status === 'live' && BigInt(g.earned) > 0n && (
               <div className="gauge-stat">
@@ -302,7 +350,7 @@ export default function StakePage() {
                 <span className="user-stat-value text-positive">{formatNumber(data.earned)} CHAOSLP</span>
               </div>
             )}
-            {gauges.filter(g => g.status === 'live' && BigInt(g.earned) > 0n).map(g => (
+            {spokeGauges.filter(g => g.status === 'live' && BigInt(g.earned) > 0n).map(g => (
               <div className="user-stat" key={g.symbol}>
                 <span className="user-stat-label">{g.symbol} Earned</span>
                 <span className="user-stat-value text-positive">{formatNumber(g.earned, g.decimals)} {g.symbol}</span>
@@ -373,19 +421,19 @@ export default function StakePage() {
           <div className="staking-section">
             <h3>Rewards</h3>
             <div className="rewards-list">
-              {gauges.filter(g => g.status === 'live').map(g => (
-                <div className="rewards-row" key={g.symbol}>
-                  <span className="rewards-amount">{formatNumber(g.earned, g.decimals)}</span>
-                  <span className="rewards-token">{g.symbol}</span>
-                </div>
-              ))}
               {data && BigInt(data.earned) > 0n && (
                 <div className="rewards-row">
                   <span className="rewards-amount">{formatNumber(data.earned)}</span>
                   <span className="rewards-token">CHAOSLP (hub)</span>
                 </div>
               )}
-              {gauges.filter(g => g.status === 'live').length === 0 && (!data || BigInt(data.earned) === 0n) && (
+              {spokeGauges.filter(g => g.status === 'live').map(g => (
+                <div className="rewards-row" key={g.symbol}>
+                  <span className="rewards-amount">{formatNumber(g.earned, g.decimals)}</span>
+                  <span className="rewards-token">{g.symbol}</span>
+                </div>
+              ))}
+              {spokeGauges.filter(g => g.status === 'live').length === 0 && (!data || BigInt(data.earned) === 0n) && (
                 <div className="rewards-row">
                   <span className="rewards-token">No active rewards yet</span>
                 </div>

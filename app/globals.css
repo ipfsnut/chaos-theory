@@ -451,8 +451,10 @@ input, select, textarea {
 .rewards-list {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-xs);
   margin-bottom: var(--spacing-md);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
 }
 
 .rewards-row {
@@ -461,10 +463,13 @@ input, select, textarea {
   align-items: center;
   padding: var(--spacing-sm) var(--spacing-md);
   background: var(--bg-secondary);
-  border-radius: var(--radius-sm);
 }
 
-.rewards-amount { font-weight: 600; color: var(--positive); }
+.rewards-row + .rewards-row {
+  border-top: 1px solid var(--border);
+}
+
+.rewards-amount { font-weight: 600; color: var(--positive); font-variant-numeric: tabular-nums; }
 .rewards-token { font-size: var(--text-sm); color: var(--text-muted); }
 .rewards-buttons { display: flex; gap: var(--spacing-sm); }
 
