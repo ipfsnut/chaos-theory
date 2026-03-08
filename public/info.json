@@ -1,51 +1,103 @@
 {
-  "name": "ChaosLP",
-  "description": "High-risk coordination asset for ArbMe. Stake ChaosLP or LP it to earn from three pools on Base.",
+  "name": "ChaosTheory",
+  "description": "Infrastructure for moving price information across Ethereum. Stake $CHAOSLP, earn 5 tokens via 180-day rolling LP fee streams from CHAOSLP pairs on Base.",
   "version": "2.0.0",
   "chain": "base",
   "chainId": 8453,
   "website": "https://chaos-theory.epicdylan.com",
   "arbme": "https://arbme.epicdylan.com",
+  "agentDocs": "https://abc-alpha.epicdylan.com",
   "contracts": {
+    "chaos": {
+      "address": "0xfab2ee8eb6b26208bfb5c41012661e62b4dc9292",
+      "type": "ERC20",
+      "decimals": 18,
+      "name": "ChaosTheory",
+      "symbol": "CHAOS",
+      "flaunch": "https://www.flaunch.gg/base/coin/0xFaB2ee8eB6B26208BfB5c41012661e62b4Dc9292",
+      "basescan": "https://basescan.org/token/0xFaB2ee8eB6B26208BfB5c41012661e62b4Dc9292"
+    },
     "chaoslp": {
       "address": "0x8454d062506a27675706148ecdd194e45e44067a",
-      "flaunchNFT": "0x516af52d0c629b5e378da4dc64ecb0744ce10109",
       "type": "ERC20",
       "decimals": 18,
       "name": "ChaosLP",
       "symbol": "CHAOSLP",
-      "flaunch": "https://www.flaunch.gg/base/coin/0x516af52d0c629b5e378da4dc64ecb0744ce10109",
       "basescan": "https://basescan.org/token/0x8454d062506a27675706148ecdd194e45e44067a"
     },
     "stakingHub": {
-      "address": "TODO_STAKING_HUB_ADDRESS",
+      "address": "0x48D9eC58746aD41731De91Efb1e315c8fcF5d20a",
       "type": "StakingRewards",
-      "description": "Hub contract — stake CHAOSLP, earn CHAOSLP + 3 gauge rewards (ARBME, USDC, FLAY)",
+      "description": "Hub contract — stake CHAOSLP, earn CHAOSLP base rewards plus multi-gauge spoke rewards",
       "rewardsDuration": 15552000,
-      "basescan": "https://basescan.org/address/TODO_STAKING_HUB_ADDRESS"
+      "basescan": "https://basescan.org/address/0x48D9eC58746aD41731De91Efb1e315c8fcF5d20a"
     },
-    "safe": {
+    "foundationMultisig": {
       "address": "0xb7DD467A573809218aAE30EB2c60e8AE3a9198a0",
       "type": "GnosisSafe",
-      "description": "ChaosLP treasury. Holds LP positions, distributes fees to gauges weekly.",
       "safe": "https://app.safe.global/home?safe=base:0xb7DD467A573809218aAE30EB2c60e8AE3a9198a0"
     }
   },
-  "pools": [
-    { "pair": "CHAOSLP / ARBME", "fee": "3%", "tickSpacing": 600, "role": "Bridge to ArbMe ecosystem" },
-    { "pair": "CHAOSLP / USDC", "fee": "3%", "tickSpacing": 600, "role": "Stable gateway" },
-    { "pair": "CHAOSLP / FLAY", "fee": "3%", "tickSpacing": 600, "role": "Flaunch ecosystem" }
-  ],
   "gauges": [
-    { "symbol": "CHAOSLP", "tokenAddress": "0x8454d062506a27675706148ecdd194e45e44067a", "gaugeAddress": "TODO_CHAOSLP_GAUGE", "decimals": 18, "pool": "Hub Reward", "status": "pending" },
-    { "symbol": "ARBME", "tokenAddress": "0xC647421C5Dc78D1c3960faA7A33f9aEFDF4B7B07", "gaugeAddress": "TODO_ARBME_GAUGE", "decimals": 18, "pool": "CHAOSLP / ARBME", "status": "pending" },
-    { "symbol": "USDC", "tokenAddress": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913", "gaugeAddress": "TODO_USDC_GAUGE", "decimals": 6, "pool": "CHAOSLP / USDC", "status": "pending" },
-    { "symbol": "FLAY", "tokenAddress": "0xf1a7000000950c7ad8aff13118bb7ab561a448ee", "gaugeAddress": "TODO_FLAY_GAUGE", "decimals": 18, "pool": "CHAOSLP / FLAY", "status": "pending" }
+    {
+      "symbol": "CHAOSLP",
+      "tokenAddress": "0x8454d062506a27675706148ecdd194e45e44067a",
+      "gaugeAddress": "0x48D9eC58746aD41731De91Efb1e315c8fcF5d20a",
+      "decimals": 18,
+      "pool": "Hub Reward",
+      "week": 1,
+      "status": "deployed"
+    },
+    {
+      "symbol": "ARBME",
+      "tokenAddress": "0xC647421C5Dc78D1c3960faA7A33f9aEFDF4B7B07",
+      "gaugeAddress": "0xecf0307ed8d64cEEc82B1A2488D9c7969c0B26f2",
+      "decimals": 18,
+      "pool": "CHAOSLP / ARBME",
+      "week": 2,
+      "status": "deployed"
+    },
+    {
+      "symbol": "CLANKER",
+      "tokenAddress": "0x1bc0c42215582d5A085795f4baDbaC3ff36d1Bcb",
+      "gaugeAddress": "0xb9135C878DA7f229E39CD16121B5F7796eE7DB53",
+      "decimals": 18,
+      "pool": "CHAOSLP / CLANKER",
+      "week": 3,
+      "status": "deployed"
+    },
+    {
+      "symbol": "FLAY",
+      "tokenAddress": "0xf1a7000000950c7ad8aff13118bb7ab561a448ee",
+      "gaugeAddress": "0xE2aCDb1dea6422671e95500834eBc21dbbDf5F7D",
+      "decimals": 18,
+      "pool": "CHAOSLP / FLAY",
+      "week": 4,
+      "status": "deployed"
+    },
+    {
+      "symbol": "VIRTUAL",
+      "tokenAddress": "0x0b3e328455c4059EEb9e3f84b5543F74E24e7E1b",
+      "gaugeAddress": "0x839ac3EB369D7f5d55f01Fb13770D515841439d6",
+      "decimals": 18,
+      "pool": "CHAOSLP / VIRTUAL",
+      "week": 5,
+      "status": "deployed"
+    }
+  ],
+  "services": [
+    { "name": "Token Analysis", "turnaround": "24h", "price": "0.0050 ETH" },
+    { "name": "Safe Setup", "turnaround": "24h", "price": "0.0050 ETH" },
+    { "name": "Staking Contract Deployment", "turnaround": "48h", "price": "0.0500 ETH" },
+    { "name": "New Token Volume Package", "turnaround": "72h", "price": "0.0100 ETH" },
+    { "name": "LP Strategy Consult", "turnaround": "48h", "price": "0.1000 ETH" },
+    { "name": "AI-Ready Website Layer", "turnaround": "48h", "price": "0.0500 ETH", "description": "Add an AI-accessible semantic layer to your existing website with zero visual changes. Structured metadata, agent-friendly endpoints, and machine-readable context. Prerequisite: open-source GitHub repo." }
   ],
   "links": {
-    "flaunch": "https://www.flaunch.gg/base/coin/0x516af52d0c629b5e378da4dc64ecb0744ce10109",
-    "basescan": "https://basescan.org/token/0x8454d062506a27675706148ecdd194e45e44067a",
+    "flaunch": "https://www.flaunch.gg/base/coin/0xFaB2ee8eB6B26208BfB5c41012661e62b4Dc9292",
+    "basescan": "https://basescan.org/token/0xFaB2ee8eB6B26208BfB5c41012661e62b4Dc9292",
     "warpcast": "https://warpcast.com/abc-alpha",
+    "agentDocs": "https://abc-alpha.epicdylan.com",
     "arbme": "https://arbme.epicdylan.com"
   }
 }

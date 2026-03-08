@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useAccount, useSendTransaction } from 'wagmi'
-import { createPublicClient, http, fallback, formatUnits, encodeFunctionData, maxUint256 } from 'viem'
+import { createPublicClient, http, fallback, formatUnits, encodeFunctionData } from 'viem'
 import { base } from 'viem/chains'
 import {
   CHAOSLP_ADDRESS,
@@ -105,7 +105,7 @@ export default function StakePage() {
 
       const gaugeData: GaugeData[] = await Promise.all(
         CHAOSLP_GAUGES.map(async (g) => {
-          if (g.gaugeAddress.startsWith('TODO')) {
+          if (g.gaugeAddress === '0x0000000000000000000000000000000000000000') {
             return { ...g, rewardRate: '0', periodFinish: 0, earned: '0', status: 'pending' as const }
           }
 
@@ -151,9 +151,11 @@ export default function StakePage() {
   }
 
   const handleApprove = async () => {
+    const amount = parseToWei(stakeAmount)
+    if (amount === '0') return
     setActionLoading('approve'); setActionError(null)
     try {
-      const txData = encodeFunctionData({ abi: ERC20_ABI, functionName: 'approve', args: [CHAOSLP_STAKING_ADDRESS as `0x${string}`, maxUint256] })
+      const txData = encodeFunctionData({ abi: ERC20_ABI, functionName: 'approve', args: [CHAOSLP_STAKING_ADDRESS as `0x${string}`, BigInt(amount)] })
       await sendTransactionAsync({ to: CHAOSLP_ADDRESS as `0x${string}`, data: txData })
       await waitAndRefresh()
     } catch (e: unknown) {
@@ -230,7 +232,7 @@ export default function StakePage() {
       <div className="section-header">
         <h2>Stake ChaosLP</h2>
         <p className="section-desc">
-          Stake once. Earn four tokens. Fee revenue from three ChaosLP pools, distributed via 180-day rolling streams.
+          Stake once. Earn five tokens. Fee revenue from ChaosLP pools, distributed via 180-day rolling streams.
         </p>
       </div>
 
@@ -246,7 +248,7 @@ export default function StakePage() {
         </div>
         <div className="stat-card">
           <span className="stat-label">Active Gauges</span>
-          <span className="stat-value">{gauges.filter(g => g.status === 'live').length} / 4</span>
+          <span className="stat-value">{gauges.filter(g => g.status === 'live').length} / 5</span>
         </div>
       </div>
 
