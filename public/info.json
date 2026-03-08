@@ -32,7 +32,7 @@
       "rewardsDuration": 15552000,
       "basescan": "https://basescan.org/address/0x48D9eC58746aD41731De91Efb1e315c8fcF5d20a"
     },
-    "foundationMultisig": {
+    "railsMultisig": {
       "address": "0xb7DD467A573809218aAE30EB2c60e8AE3a9198a0",
       "type": "GnosisSafe",
       "safe": "https://app.safe.global/home?safe=base:0xb7DD467A573809218aAE30EB2c60e8AE3a9198a0"

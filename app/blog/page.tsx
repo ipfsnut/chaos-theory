@@ -12,7 +12,7 @@ export default function BlogPage() {
     <>
       <div className="section-header">
         <h2>Blog</h2>
-        <p className="section-desc">Announcements and updates from the ChaosTheory Foundation.</p>
+        <p className="section-desc">Announcements and updates from ChaosTheory.</p>
       </div>
 
       <div className="blog-list">

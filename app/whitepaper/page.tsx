@@ -423,7 +423,7 @@ export default function WhitepaperPage() {
             <h2 className="rails-h2">8. Infrastructure</h2>
             <div className="rails-address-grid">
               <div className="address-card">
-                <div className="address-label">ChaosTheory Foundation Multisig (Gnosis Safe, Base)</div>
+                <div className="address-label">Rails Multisig (Gnosis Safe, Base)</div>
                 <a href={LINKS.multisig} target="_blank" rel="noopener noreferrer" className="address-value">
                   0xb7DD467A573809218aAE30EB2c60e8AE3a9198a0
                 </a>
@@ -517,7 +517,7 @@ export default function WhitepaperPage() {
                 <span className="rails-link-url">flaunch.gg</span>
               </a>
               <a href={LINKS.multisig} target="_blank" rel="noopener noreferrer" className="rails-link-card">
-                <span className="rails-link-label">Foundation Multisig</span>
+                <span className="rails-link-label">Rails Multisig</span>
                 <span className="rails-link-url">0xb7DD...8a0</span>
               </a>
               <a href={LINKS.stakingBasescan} target="_blank" rel="noopener noreferrer" className="rails-link-card">

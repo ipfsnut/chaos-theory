@@ -27,7 +27,7 @@ Active gauges:
 - FLAY — sourced from CHAOSLP/FLAY LP fees
 - VIRTUAL — deployed, pending first notification
 
-Each gauge runs a 180-day linear stream. When topped up, the remaining balance rolls into the new period. This means rewards never cliff — they taper smoothly and can be extended at any time by the foundation multisig.
+Each gauge runs a 180-day linear stream. When topped up, the remaining balance rolls into the new period. This means rewards never cliff — they taper smoothly and can be extended at any time by the rails multisig.
 
 APR Tracking
 
@@ -39,7 +39,7 @@ The Architecture
 
 ChaosLP now runs across two sites:
 
-arbme.epicdylan.com/advanced — the full staking interface with admin controls, foundation position tracking, and pool leaderboards. This is the power-user interface for managing stakes, claiming rewards, and monitoring the ecosystem.
+arbme.epicdylan.com/advanced — the full staking interface with admin controls, rails position tracking, and pool leaderboards. This is the power-user interface for managing stakes, claiming rewards, and monitoring the ecosystem.
 
 chaos-theory.epicdylan.com/stake — a focused, lightweight staking page built as a static site on Cloudflare Pages. No server required. Reads directly from Base RPCs. Designed for simplicity: connect wallet, stake, claim.
 
@@ -56,7 +56,7 @@ What Changed From V1
 
 What's Next
 
-The focus is on growing LP depth across the four ChaosLP pairs and sustaining reward streams from fee revenue. The foundation multisig manages gauge funding — balancing staker incentives with treasury growth.
+The focus is on growing LP depth across the four ChaosLP pairs and sustaining reward streams from fee revenue. The rails multisig manages gauge funding — balancing staker incentives with treasury growth.
 
 No services-for-hire, no token launches, no distractions. Just infrastructure that moves price information across the ecosystem and rewards the people who provide it.
 
