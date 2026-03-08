@@ -1,6 +1,6 @@
 {
   "name": "ChaosTheory",
-  "description": "Infrastructure for moving price information across Ethereum. Stake $CHAOSLP, earn 5 tokens via 180-day rolling LP fee streams from CHAOSLP pairs on Base.",
+  "description": "Infrastructure for moving price information across Ethereum. Stake $CHAOSLP, earn 6 tokens via 180-day rolling LP fee streams from CHAOSLP pairs on Base.",
   "version": "2.0.0",
   "chain": "base",
   "chainId": 8453,
@@ -83,6 +83,15 @@
       "pool": "CHAOSLP / VIRTUAL",
       "week": 5,
       "status": "deployed"
+    },
+    {
+      "symbol": "VENDYZ",
+      "tokenAddress": "0x24245dff20ee3d826f99e1b3f685670166e673dc",
+      "gaugeAddress": "0x0000000000000000000000000000000000000000",
+      "decimals": 18,
+      "pool": "CHAOSLP / VENDYZ",
+      "week": 6,
+      "status": "pending"
     }
   ],
   "services": [

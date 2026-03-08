@@ -274,7 +274,7 @@ export default function StakePage() {
       <div className="section-header">
         <h2>Stake ChaosLP</h2>
         <p className="section-desc">
-          Stake once. Earn five tokens. Fee revenue from ChaosLP pools, distributed via 180-day rolling streams.
+          Stake once. Earn six tokens. Fee revenue from ChaosLP pools, distributed via 180-day rolling streams.
         </p>
       </div>
 
@@ -290,7 +290,7 @@ export default function StakePage() {
         </div>
         <div className="stat-card">
           <span className="stat-label">Active Gauges</span>
-          <span className="stat-value">{gauges.filter(g => g.status === 'live').length} / 5</span>
+          <span className="stat-value">{gauges.filter(g => g.status === 'live').length} / {gauges.length}</span>
         </div>
       </div>
 

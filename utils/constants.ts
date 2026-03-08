@@ -13,6 +13,7 @@ export const ARBME_ADDRESS = '0xC647421C5Dc78D1c3960faA7A33f9aEFDF4B7B07' as con
 export const CLANKER_ADDRESS = '0x1bc0c42215582d5A085795f4baDbaC3ff36d1Bcb' as const;
 export const FLAY_ADDRESS = '0xf1a7000000950c7ad8aff13118bb7ab561a448ee' as const;
 export const VIRTUAL_ADDRESS = '0x0b3e328455c4059EEb9e3f84b5543F74E24e7E1b' as const;
+export const VENDYZ_ADDRESS = '0x24245dff20ee3d826f99e1b3f685670166e673dc' as const;
 
 // ── Gauge Config ──────────────────────────────────────────────────────
 export interface GaugeConfig {
@@ -29,6 +30,7 @@ export const CHAOSLP_GAUGES: GaugeConfig[] = [
   { symbol: 'CLANKER', tokenAddress: CLANKER_ADDRESS,  gaugeAddress: '0xb9135C878DA7f229E39CD16121B5F7796eE7DB53', decimals: 18, pool: 'CHAOSLP / CLANKER' },
   { symbol: 'FLAY',    tokenAddress: FLAY_ADDRESS,     gaugeAddress: '0xE2aCDb1dea6422671e95500834eBc21dbbDf5F7D', decimals: 18, pool: 'CHAOSLP / FLAY' },
   { symbol: 'VIRTUAL', tokenAddress: VIRTUAL_ADDRESS,  gaugeAddress: '0x839ac3EB369D7f5d55f01Fb13770D515841439d6', decimals: 18, pool: 'CHAOSLP / VIRTUAL' },
+  { symbol: 'VENDYZ', tokenAddress: VENDYZ_ADDRESS,   gaugeAddress: '0x0000000000000000000000000000000000000000', decimals: 18, pool: 'CHAOSLP / VENDYZ' },
 ];
 
 // ── External Links ────────────────────────────────────────────────────

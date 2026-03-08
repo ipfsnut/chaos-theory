@@ -10,11 +10,11 @@ export const POSTS: BlogPost[] = [
   {
     slug: 'chaoslp-staking-live-with-apr',
     date: '2026-03-08',
-    title: 'ChaosLP Staking Is Live — 4 Gauges Streaming, APR Tracking, Dual-Site Architecture',
-    excerpt: 'ChaosLP V2 staking is fully operational. Four reward gauges are actively streaming CHAOSLP, ARBME, CLANKER, and FLAY to stakers. Real-time APR is now visible across both the ArbMe advanced page and chaos-theory.epicdylan.com.',
+    title: 'ChaosLP Staking Is Live — 5 Gauges Streaming, VENDYZ Gauge Incoming, APR Tracking',
+    excerpt: 'ChaosLP V2 staking is fully operational. Five reward gauges are actively streaming CHAOSLP, ARBME, CLANKER, FLAY, and VIRTUAL to stakers. VENDYZ gauge is next. Real-time APR is now visible across both the ArbMe advanced page and chaos-theory.epicdylan.com.',
     content: `ChaosLP V2 staking is fully operational on Base.
 
-Four out of five reward gauges are actively streaming tokens to $CHAOSLP stakers right now. The VIRTUAL gauge is deployed and will go live once notified.
+Five reward gauges are actively streaming tokens to $CHAOSLP stakers. A sixth gauge for VENDYZ is in progress.
 
 What's Live
 
@@ -25,7 +25,8 @@ Active gauges:
 - ARBME — sourced from CHAOSLP/ARBME LP fees
 - CLANKER — sourced from CHAOSLP/CLANKER LP fees
 - FLAY — sourced from CHAOSLP/FLAY LP fees
-- VIRTUAL — deployed, pending first notification
+- VIRTUAL — sourced from CHAOSLP/VIRTUAL LP fees
+- VENDYZ — CHAOSLP/VENDYZ pool created, gauge deployment pending
 
 Each gauge runs a 180-day linear stream. When topped up, the remaining balance rolls into the new period. This means rewards never cliff — they taper smoothly and can be extended at any time by the rails multisig.
 
@@ -48,17 +49,15 @@ Both interfaces read from the same contracts and show the same data. The ArbMe v
 What Changed From V1
 
 - Staking token: $CHAOS → $CHAOSLP
-- Gauges: replaced the original set (ALPHACLAW, MLTL, OSO, Cnews, RATCHET, USDC) with the current 5
+- Gauges: replaced the original set (ALPHACLAW, MLTL, OSO, Cnews, RATCHET, USDC) with the current 6
 - USDC gauge dropped — 6-decimal precision made it unviable for small reward amounts
 - All gauges run simultaneously instead of weekly rotation
 - Exact ERC20 approvals for user staking (no more unlimited approvals)
-- Foundation multisig updated to 0xb7DD467A573809218aAE30EB2c60e8AE3a9198a0
+- Rails multisig at 0xb7DD467A573809218aAE30EB2c60e8AE3a9198a0
 
 What's Next
 
-The focus is on growing LP depth across the four ChaosLP pairs and sustaining reward streams from fee revenue. The rails multisig manages gauge funding — balancing staker incentives with treasury growth.
-
-No services-for-hire, no token launches, no distractions. Just infrastructure that moves price information across the ecosystem and rewards the people who provide it.
+The focus is on growing LP depth across the ChaosLP pairs and sustaining reward streams from fee revenue. The rails multisig manages gauge funding — balancing staker incentives with treasury growth. VENDYZ is the newest addition to the ecosystem, representing the Farcaster community.
 
 Stake at chaos-theory.epicdylan.com/stake or arbme.epicdylan.com/advanced.`,
   },
