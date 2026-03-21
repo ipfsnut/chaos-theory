@@ -16,11 +16,12 @@ import { formatNumber, formatCountdown, parseToWei } from '@/utils/format'
 const publicClient = createPublicClient({
   chain: base,
   transport: fallback([
-    http('https://base.llamarpc.com'),
-    http('https://base-rpc.publicnode.com'),
-    http('https://base.meowrpc.com'),
-    http('https://mainnet.base.org'),
+    http('https://base-rpc.publicnode.com', { timeout: 5_000 }),
+    http('https://mainnet.base.org', { timeout: 5_000 }),
+    http('https://base.meowrpc.com', { timeout: 5_000 }),
+    http('https://base.llamarpc.com', { timeout: 5_000 }),
   ]),
+  pollingInterval: 4_000,
 })
 
 interface GaugeData extends GaugeConfig {
@@ -187,9 +188,19 @@ export default function StakePage() {
   }, [fetchData])
 
   const waitForTx = async (hash: `0x${string}`) => {
-    const receipt = await publicClient.waitForTransactionReceipt({ hash, timeout: 60_000 })
-    if (receipt.status === 'reverted') {
-      throw new Error('Transaction reverted on-chain')
+    try {
+      const receipt = await publicClient.waitForTransactionReceipt({
+        hash,
+        timeout: 30_000,
+        pollingInterval: 3_000,
+      })
+      if (receipt.status === 'reverted') {
+        throw new Error('Transaction reverted on-chain')
+      }
+    } catch (e: unknown) {
+      // If polling timed out, the tx may still have succeeded — refresh and let the user see
+      if (e instanceof Error && e.message.includes('reverted')) throw e
+      console.warn('[waitForTx] Receipt poll timed out, refreshing data anyway', e)
     }
     await fetchData()
   }
