@@ -183,7 +183,7 @@ export default function StakePage() {
 
   useEffect(() => { fetchData() }, [fetchData])
   useEffect(() => {
-    const interval = setInterval(fetchData, 30000)
+    const interval = setInterval(fetchData, 15000)
     return () => clearInterval(interval)
   }, [fetchData])
 
@@ -202,6 +202,11 @@ export default function StakePage() {
       if (e instanceof Error && e.message.includes('reverted')) throw e
       console.warn('[waitForTx] Receipt poll timed out, refreshing data anyway', e)
     }
+    // Give public RPCs a moment to index the new block, then refresh twice
+    await new Promise(r => setTimeout(r, 2000))
+    await fetchData()
+    // Second refresh catches RPCs that were still stale on first pass
+    await new Promise(r => setTimeout(r, 4000))
     await fetchData()
   }
 
