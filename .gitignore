@@ -42,3 +42,6 @@ scripts/snapshot-staking.mjs
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# working notes
+/temp

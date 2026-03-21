@@ -91,6 +91,8 @@ export default function StakePage() {
   const [withdrawAmount, setWithdrawAmount] = useState('')
   const [actionLoading, setActionLoading] = useState<string | null>(null)
   const [actionError, setActionError] = useState<string | null>(null)
+  const [stakeStep, setStakeStep] = useState<'input' | 'approved'>('input')
+  const [approvedAmount, setApprovedAmount] = useState('')
 
   const fetchData = useCallback(async () => {
     try {
@@ -184,8 +186,11 @@ export default function StakePage() {
     return () => clearInterval(interval)
   }, [fetchData])
 
-  const waitAndRefresh = async () => {
-    await new Promise(r => setTimeout(r, 4000))
+  const waitForTx = async (hash: `0x${string}`) => {
+    const receipt = await publicClient.waitForTransactionReceipt({ hash, timeout: 60_000 })
+    if (receipt.status === 'reverted') {
+      throw new Error('Transaction reverted on-chain')
+    }
     await fetchData()
   }
 
@@ -195,22 +200,27 @@ export default function StakePage() {
     setActionLoading('approve'); setActionError(null)
     try {
       const txData = encodeFunctionData({ abi: ERC20_ABI, functionName: 'approve', args: [CHAOSLP_STAKING_ADDRESS as `0x${string}`, BigInt(amount)] })
-      await sendTransactionAsync({ to: CHAOSLP_ADDRESS as `0x${string}`, data: txData })
-      await waitAndRefresh()
+      const hash = await sendTransactionAsync({ to: CHAOSLP_ADDRESS as `0x${string}`, data: txData })
+      await waitForTx(hash)
+      setApprovedAmount(stakeAmount)
+      setStakeStep('approved')
     } catch (e: unknown) {
       setActionError(e instanceof Error ? e.message : 'Approval failed')
     } finally { setActionLoading(null) }
   }
 
   const handleStake = async () => {
-    const amount = parseToWei(stakeAmount)
+    const amt = stakeStep === 'approved' ? approvedAmount : stakeAmount
+    const amount = parseToWei(amt)
     if (amount === '0') return
     setActionLoading('stake'); setActionError(null)
     try {
       const txData = encodeFunctionData({ abi: STAKING_ABI, functionName: 'stake', args: [BigInt(amount)] })
-      await sendTransactionAsync({ to: CHAOSLP_STAKING_ADDRESS as `0x${string}`, data: txData })
+      const hash = await sendTransactionAsync({ to: CHAOSLP_STAKING_ADDRESS as `0x${string}`, data: txData })
+      await waitForTx(hash)
       setStakeAmount('')
-      await waitAndRefresh()
+      setApprovedAmount('')
+      setStakeStep('input')
     } catch (e: unknown) {
       setActionError(e instanceof Error ? e.message : 'Stake failed')
     } finally { setActionLoading(null) }
@@ -222,9 +232,9 @@ export default function StakePage() {
     setActionLoading('withdraw'); setActionError(null)
     try {
       const txData = encodeFunctionData({ abi: STAKING_ABI, functionName: 'withdraw', args: [BigInt(amount)] })
-      await sendTransactionAsync({ to: CHAOSLP_STAKING_ADDRESS as `0x${string}`, data: txData })
+      const hash = await sendTransactionAsync({ to: CHAOSLP_STAKING_ADDRESS as `0x${string}`, data: txData })
+      await waitForTx(hash)
       setWithdrawAmount('')
-      await waitAndRefresh()
     } catch (e: unknown) {
       setActionError(e instanceof Error ? e.message : 'Withdraw failed')
     } finally { setActionLoading(null) }
@@ -234,8 +244,8 @@ export default function StakePage() {
     setActionLoading('claim'); setActionError(null)
     try {
       const txData = encodeFunctionData({ abi: STAKING_ABI, functionName: 'getReward' })
-      await sendTransactionAsync({ to: CHAOSLP_STAKING_ADDRESS as `0x${string}`, data: txData })
-      await waitAndRefresh()
+      const hash = await sendTransactionAsync({ to: CHAOSLP_STAKING_ADDRESS as `0x${string}`, data: txData })
+      await waitForTx(hash)
     } catch (e: unknown) {
       setActionError(e instanceof Error ? e.message : 'Claim failed')
     } finally { setActionLoading(null) }
@@ -245,14 +255,14 @@ export default function StakePage() {
     setActionLoading('exit'); setActionError(null)
     try {
       const txData = encodeFunctionData({ abi: STAKING_ABI, functionName: 'exit' })
-      await sendTransactionAsync({ to: CHAOSLP_STAKING_ADDRESS as `0x${string}`, data: txData })
-      await waitAndRefresh()
+      const hash = await sendTransactionAsync({ to: CHAOSLP_STAKING_ADDRESS as `0x${string}`, data: txData })
+      await waitForTx(hash)
     } catch (e: unknown) {
       setActionError(e instanceof Error ? e.message : 'Exit failed')
     } finally { setActionLoading(null) }
   }
 
-  const needsApproval = data ? BigInt(data.allowance) < BigInt(parseToWei(stakeAmount || '0')) : false
+  const needsApproval = stakeStep === 'input' && data ? BigInt(data.allowance) < BigInt(parseToWei(stakeAmount || '0')) : false
   const gauges = data?.gauges || CHAOSLP_GAUGES.map(g => ({ ...g, rewardRate: '0', periodFinish: 0, earned: '0', apr: 0, status: 'pending' as const }))
   // Spoke gauges only (exclude CHAOSLP hub to avoid duplicate display)
   const spokeGauges = gauges.filter(g => g.symbol !== 'CHAOSLP')
@@ -367,6 +377,29 @@ export default function StakePage() {
           )}
 
           {/* Stake */}
+          {stakeStep === 'approved' ? (
+          <div className="staking-section">
+            <h3>Stake</h3>
+            <div style={{ padding: 'var(--spacing-md)', border: '1px solid var(--accent)', borderRadius: 'var(--radius)', marginBottom: 'var(--spacing-md)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <div style={{ fontSize: 'var(--text-xs)', color: 'var(--text-muted)' }}>Approved Amount</div>
+                <div style={{ fontSize: 'var(--text-lg)', fontWeight: 600 }}>{approvedAmount} CHAOSLP</div>
+              </div>
+              <span style={{ color: 'var(--accent)', fontSize: 'var(--text-sm)' }}>Approved</span>
+            </div>
+            <div className="action-buttons">
+              <button className="btn btn-primary full-width" onClick={handleStake}
+                disabled={actionLoading !== null}>
+                {actionLoading === 'stake' ? 'Staking...' : `Stake ${approvedAmount} CHAOSLP`}
+              </button>
+            </div>
+            <button onClick={() => { setStakeStep('input'); setApprovedAmount('') }}
+              disabled={actionLoading !== null}
+              style={{ marginTop: 'var(--spacing-sm)', fontSize: 'var(--text-sm)', color: 'var(--text-muted)', background: 'none', border: 'none', cursor: 'pointer', textDecoration: 'underline' }}>
+              Change amount
+            </button>
+          </div>
+          ) : (
           <div className="staking-section">
             <h3>Stake</h3>
             <div className="input-group">
@@ -383,17 +416,18 @@ export default function StakePage() {
             <div className="action-buttons">
               {needsApproval ? (
                 <button className="btn btn-primary full-width" onClick={handleApprove}
-                  disabled={actionLoading === 'approve' || !stakeAmount}>
-                  {actionLoading === 'approve' ? 'Approving...' : 'Approve'}
+                  disabled={actionLoading !== null || !stakeAmount}>
+                  {actionLoading === 'approve' ? 'Approving...' : `Approve ${stakeAmount} CHAOSLP`}
                 </button>
               ) : (
                 <button className="btn btn-primary full-width" onClick={handleStake}
-                  disabled={actionLoading === 'stake' || !stakeAmount}>
+                  disabled={actionLoading !== null || !stakeAmount}>
                   {actionLoading === 'stake' ? 'Staking...' : 'Stake'}
                 </button>
               )}
             </div>
           </div>
+          )}
 
           {/* Withdraw */}
           <div className="staking-section">
@@ -411,7 +445,7 @@ export default function StakePage() {
             </div>
             <div className="action-buttons">
               <button className="btn btn-secondary full-width" onClick={handleWithdraw}
-                disabled={actionLoading === 'withdraw' || !withdrawAmount || BigInt(data?.staked || '0') === 0n}>
+                disabled={actionLoading !== null || !withdrawAmount || BigInt(data?.staked || '0') === 0n}>
                 {actionLoading === 'withdraw' ? 'Withdrawing...' : 'Withdraw'}
               </button>
             </div>
@@ -441,11 +475,11 @@ export default function StakePage() {
             </div>
             <div className="rewards-buttons">
               <button className="btn btn-primary" onClick={handleClaim}
-                disabled={actionLoading === 'claim'}>
+                disabled={actionLoading !== null}>
                 {actionLoading === 'claim' ? 'Claiming...' : 'Claim All Rewards'}
               </button>
               <button className="btn btn-secondary" onClick={handleExit}
-                disabled={actionLoading === 'exit' || (BigInt(data?.staked || '0') === 0n && BigInt(data?.earned || '0') === 0n)}>
+                disabled={actionLoading !== null || (BigInt(data?.staked || '0') === 0n && BigInt(data?.earned || '0') === 0n)}>
                 {actionLoading === 'exit' ? 'Exiting...' : 'Exit All'}
               </button>
             </div>

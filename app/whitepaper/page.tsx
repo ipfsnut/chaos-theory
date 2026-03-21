@@ -21,15 +21,12 @@ const SECTIONS: Section[] = [
   { id: 'section-3-1', label: '3.1 In Practice', indent: true },
   { id: 'section-3-2', label: '3.2 The Ratchet', indent: true },
   { id: 'section-4', label: '4. Pair Architecture' },
-  { id: 'section-5', label: '5. ChaosTheory' },
-  { id: 'section-6', label: '6. Project Fundraising' },
-  { id: 'section-7', label: '7. The Flywheel' },
-  { id: 'section-8', label: '8. Infrastructure' },
-  { id: 'section-9', label: '9. Hiring the Bot' },
-  { id: 'section-10', label: '10. What Comes Next' },
+  { id: 'section-5', label: '5. Staking' },
+  { id: 'section-6', label: '6. The Flywheel' },
+  { id: 'section-7', label: '7. Infrastructure' },
 ]
 
-const CLAUDE_PROMPT = `Read the $CHAOS Rails whitepaper at https://chaos-theory.epicdylan.com/whitepaper and help me understand it. I may ask about specific sections, the math, or how the system works.`
+const CLAUDE_PROMPT = `Read the $CHAOSLP Rails whitepaper at https://chaos-theory.epicdylan.com/whitepaper and help me understand it. I may ask about specific sections, the math, or how the system works.`
 
 export default function WhitepaperPage() {
   const [activeId, setActiveId] = useState('abstract')
@@ -84,12 +81,12 @@ export default function WhitepaperPage() {
     <>
       {/* Hero */}
       <div className="rails-hero">
-        <h1 className="rails-title">CHAOS Rails</h1>
-        <p className="rails-subtitle">Whitepaper v3.0</p>
-        <p className="rails-byline">Built by abc-alpha &middot; February 2026</p>
+        <h1 className="rails-title">$CHAOSLP Rails</h1>
+        <p className="rails-subtitle">Whitepaper v4.1</p>
+        <p className="rails-byline">Built by abc-alpha &middot; March 2026</p>
         <div className="rails-hero-links">
-          <Link href="/stake" className="link-pill">Stake $CHAOS</Link>
-          <a href={LINKS.flaunch} target="_blank" rel="noopener noreferrer" className="link-pill">Trade $CHAOS</a>
+          <Link href="/stake" className="link-pill">Stake $CHAOSLP</Link>
+          <a href={LINKS.flaunch} target="_blank" rel="noopener noreferrer" className="link-pill">Trade $CHAOSLP</a>
           <a href={LINKS.agentDocs} target="_blank" rel="noopener noreferrer" className="link-pill">Agent Docs</a>
           <a href={LINKS.warpcast} target="_blank" rel="noopener noreferrer" className="link-pill">@abc-alpha</a>
           <button onClick={handleOpenInClaude} className="link-pill rails-claude-btn">
@@ -147,23 +144,20 @@ export default function WhitepaperPage() {
             <h2 className="rails-h2">Abstract</h2>
             <div className="rails-abstract">
               <p>
-                $CHAOS Rails is infrastructure for moving price information across Ethereum. It sits on the boundary
-                between token economies, routing arbitrage signals between trading pairs and converting that activity
-                into permanent buy-side support through Flaunch&apos;s Progressive Bid Wall mechanism.
+                Buy $CHAOSLP. Stake it. Earn tokens.
               </p>
               <p>
-                This paper describes the system in terms of its degrees of freedom: what is mechanically fixed, what
-                operators and participants can control, and what emerges from the interaction between the two. The
-                entire architecture reduces to three controllable variables &mdash; <strong>volume</strong>,{' '}
-                <strong>time at price</strong>, and <strong>circulating supply</strong> &mdash; operating against a set
-                of immutable protocol constraints. Everything else is emergent.
+                A DAO multisig manages LP positions across five trading pairs on Base. When markets move,
+                arbitrage bots trade across those pairs and generate fees. Those fees get distributed to
+                stakers as six different tokens on 180-day rolling streams.
               </p>
               <p>
-                The math is predicated on Ethereum valuing information. Every arbitrage trade is a correction of a
-                price discrepancy &mdash; information moving from where it exists to where it doesn&apos;t. $CHAOS Rails
-                creates the surfaces across which that information flows, and captures value from the flow. It
-                isn&apos;t much yet. But the premise is that as participants learn to navigate their relationships to
-                these systems, the network develops its own intelligence about where value should be.
+                Staking also removes $CHAOSLP from circulation, which makes Flaunch&apos;s built-in
+                Progressive Bid Wall more effective &mdash; less supply floating means less sell pressure
+                for the wall to absorb.
+              </p>
+              <p>
+                This paper describes how the mechanics work.
               </p>
             </div>
           </section>
@@ -178,22 +172,22 @@ export default function WhitepaperPage() {
               disagreement between two sources of price information.
             </p>
             <p>
-              $CHAOS Rails sits on what can be thought of as Ethereum&apos;s Markov blanket &mdash; the boundary layer
+              $CHAOSLP Rails sits on what can be thought of as Ethereum&apos;s Markov blanket &mdash; the boundary layer
               where internal state meets external observation. The system doesn&apos;t generate information. It creates
               surfaces where existing information (price movements in ETH, USDC, ecosystem tokens) gets expressed,
               compared, and reconciled through trading activity. The value captured is a function of how much
               information flows across those surfaces.
             </p>
             <p>
-              A single $CHAOS trading pair is a single surface. It can only express the relationship between CHAOS
+              A single $CHAOSLP trading pair is a single surface. It can only express the relationship between CHAOSLP
               and one other token. Add a second pair and you&apos;ve created an arbitrage gradient &mdash; any time those
-              two surfaces disagree about the price of CHAOS, information needs to flow between them to resolve the
+              two surfaces disagree about the price of CHAOSLP, information needs to flow between them to resolve the
               disagreement. That flow is a trade. That trade generates fees. Those fees become buy-side support.
             </p>
             <p>
-              Seven pairs create twenty-one potential arbitrage gradients. Each new pair added doesn&apos;t just add one
+              Five pairs create ten potential arbitrage gradients. Each new pair added doesn&apos;t just add one
               surface &mdash; it adds connections to every existing surface. The information flow scales combinatorially
-              with the number of pairs. This is the core mathematical premise of $CHAOS Rails.
+              with the number of pairs.
             </p>
           </section>
 
@@ -204,7 +198,7 @@ export default function WhitepaperPage() {
 
             <h3 id="section-2-1" className="rails-h3">2.1 Constants (Protocol-Fixed)</h3>
             <p>
-              These are set by Flaunch, Uniswap V4, and the $CHAOS token creation parameters. Nobody can change them.
+              These are set by Flaunch, Uniswap V4, and the $CHAOSLP token creation parameters. Nobody can change them.
             </p>
             <p>
               The <strong>Progressive Bid Wall (PBW)</strong> trails price. It places a limit buy order just below the
@@ -217,7 +211,7 @@ export default function WhitepaperPage() {
             </p>
             <p>
               The <strong>Internal Swap Pool (ISP)</strong> converts token-side fees to ETH. Swap fees come in as both
-              ETH and CHAOS. The ISP intercepts incoming buy orders and fills them with accumulated CHAOS fee tokens
+              ETH and CHAOSLP. The ISP intercepts incoming buy orders and fills them with accumulated CHAOSLP fee tokens
               before they reach the pool. This converts fee revenue to ETH without sell pressure. It is automatic.
             </p>
             <p>
@@ -229,32 +223,28 @@ export default function WhitepaperPage() {
               pool, not a design choice.
             </p>
             <p>
-              <strong>Fee deployment is asymmetric.</strong> Fees are only deployed as buy-side support. This is the
-              fundamental asymmetry the entire system exploits.
+              <strong>Fee deployment is asymmetric.</strong> Fees are only deployed as buy-side support.
             </p>
 
             <h3 id="section-2-2" className="rails-h3">2.2 Controls (Participant-Adjustable)</h3>
             <p>
-              These are the actual degrees of freedom available to operators and participants. Every strategic decision
-              maps to one of these.
+              These are the variables that the DAO and participants can influence.
             </p>
             <p>
-              <strong>Volume.</strong> The rate of swap activity across $CHAOS pairs. Operators control this by
+              <strong>Volume.</strong> The rate of swap activity across $CHAOSLP pairs. The DAO controls this by
               choosing which pairs to create, at what fee tiers, with what liquidity depth. More pairs with
-              well-chosen counterpart tokens produce more arbitrage gradients and therefore more volume. This is the
-              primary control variable.
+              well-chosen counterpart tokens produce more arbitrage gradients and therefore more volume.
             </p>
             <p>
-              <strong>Time at price.</strong> How long $CHAOS trades at a stable level before a shock moves it. Nobody
+              <strong>Time at price.</strong> How long $CHAOSLP trades at a stable level before a shock moves it. Nobody
               directly controls price stability, but staking design and pair selection indirectly influence it. Pairs
               against stable assets (USDC) dampen volatility. Staking incentives discourage speculative churn. The
               architecture optimizes for extended consolidation.
             </p>
             <p>
-              <strong>Circulating supply.</strong> The amount of $CHAOS available for active trading. Stakers remove
-              supply from the float. Multiple competing multisigs competing for stakers remove more. Less circulating
-              supply means any given wall deployment absorbs a larger percentage of potential sell pressure. This is the
-              multiplier on wall effectiveness.
+              <strong>Circulating supply.</strong> The amount of $CHAOSLP available for active trading. When people
+              stake, they remove supply from the float. Less circulating supply means any given wall deployment
+              absorbs a larger percentage of potential sell pressure.
             </p>
 
             <h3 id="section-2-3" className="rails-h3">2.3 Emergents (Nobody Controls)</h3>
@@ -274,7 +264,7 @@ export default function WhitepaperPage() {
               width, liquidity depth, fee tiers, and data accessibility, but ultimately a market decision.
             </p>
             <p>
-              <strong>ETH correlation.</strong> $CHAOS is priced in ETH. When ETH moves, everything moves. The wall
+              <strong>ETH correlation.</strong> $CHAOSLP is priced in ETH. When ETH moves, everything moves. The wall
               can buffer this, but only proportional to its accumulated thickness.
             </p>
           </section>
@@ -342,85 +332,87 @@ export default function WhitepaperPage() {
           <section id="section-4" className="rails-section">
             <h2 className="rails-h2">4. Pair Architecture as Information Topology</h2>
             <p>
-              The choice of which tokens to pair against $CHAOS is not a financial decision. It is a decision about
-              information topology &mdash; which price signals should flow through the $CHAOS network.
+              The choice of which tokens to pair against $CHAOSLP is not a financial decision. It is a decision about
+              information topology &mdash; which price signals should flow through the $CHAOSLP network.
             </p>
             <h4 className="rails-h4">Stable Pairs (USDC)</h4>
             <p>
-              A CHAOS/USDC pair creates an anchor. USDC doesn&apos;t move, so any price movement in CHAOS creates an
+              A CHAOSLP/USDC pair creates an anchor. USDC doesn&apos;t move, so any price movement in CHAOSLP creates an
               immediate arb gradient against the USDC pair. This generates baseline volume that persists in all
               market conditions. The USDC pair is the system&apos;s clock.
             </p>
-            <h4 className="rails-h4">Ecosystem Pairs (ARBME, MLTL)</h4>
+            <h4 className="rails-h4">Ecosystem Pairs (ARBME, FLAY, VIRTUAL)</h4>
             <p>
-              Pairs against other community tokens create bidirectional information flow. Each token&apos;s volatility
+              Pairs against other ecosystem tokens create bidirectional information flow. Each token&apos;s volatility
               becomes a volume source for both. These pairs are cooperation agreements &mdash; two economies
               choosing to share fee-generating surface area.
             </p>
             <h4 className="rails-h4">Combinatorial Scaling</h4>
             <p>
               With <em>n</em> pairs, the number of potential two-hop arbitrage routes is{' '}
-              <span className="rails-math">n(n-1)/2</span>. Seven pairs create 21 potential routes. Adding an eighth
-              pair doesn&apos;t add 1 surface &mdash; it adds 7 new routes. The information topology scales faster than
-              the infrastructure.
+              <span className="rails-math">n(n-1)/2</span>. Five pairs create 10 potential routes. Adding a sixth
+              pair doesn&apos;t add 1 surface &mdash; it adds 5 new routes.
             </p>
           </section>
 
-          {/* 5. ChaosTheory */}
+          {/* 5. Staking */}
           <section id="section-5" className="rails-section">
-            <h2 className="rails-h2">5. ChaosTheory: Competing for Degrees of Freedom</h2>
-            <p>ChaosTheory is the staking layer. It is a model, not an entity. Anyone can deploy one.</p>
-            <h4 className="rails-h4">The Model</h4>
+            <h2 className="rails-h2">5. Staking</h2>
             <p>
-              A ChaosTheory deployment is a Gnosis Safe multisig running the ArbMe app, managing LP positions paired
-              against $CHAOS. $CHAOS holders stake to a specific multisig&apos;s staking hub, earning LP fee revenue
-              from that portfolio. Reward streams run on 180-day rolling windows, restarting with each weekly deposit.
+              A DAO multisig manages LP positions paired against $CHAOSLP. Stakers deposit $CHAOSLP to the
+              staking hub and earn rewards from those positions.
             </p>
-            <h4 className="rails-h4">Multiple Multisigs</h4>
+            <h4 className="rails-h4">How It Works</h4>
             <p>
-              Multiple multisigs compete for $CHAOS stakers by offering differentiated portfolios. This competition
-              is a competition for the circulating supply degree of freedom &mdash; every multisig is trying to absorb
-              as much $CHAOS as possible, which tightens the float for everyone.
+              The hub pays $CHAOSLP from fee buybacks. Each LP pair also has its own gauge that pays the
+              paired token &mdash; so stakers passively accumulate ARBME, CLANKER, FLAY, VIRTUAL, and VENDYZ
+              alongside their CHAOSLP rewards. All gauges run simultaneously with 180-day rolling streams.
             </p>
-            <h4 className="rails-h4">$RATCHET Operator Incentives</h4>
-            <p>
-              100,000,000 $RATCHET per week from a pre-allocated treasury, distributed proportionally to multisigs
-              based on $CHAOS staked.
-            </p>
+            <h4 className="rails-h4">Current Gauges</h4>
+            <div className="rails-address-grid">
+              <div className="address-card">
+                <div className="address-label">Hub Reward</div>
+                <span className="address-value" style={{ cursor: 'default', color: 'var(--text-secondary)' }}>CHAOSLP</span>
+              </div>
+              <div className="address-card">
+                <div className="address-label">CHAOSLP / ARBME</div>
+                <span className="address-value" style={{ cursor: 'default', color: 'var(--text-secondary)' }}>ARBME</span>
+              </div>
+              <div className="address-card">
+                <div className="address-label">CHAOSLP / FLAY</div>
+                <span className="address-value" style={{ cursor: 'default', color: 'var(--text-secondary)' }}>FLAY</span>
+              </div>
+              <div className="address-card">
+                <div className="address-label">CHAOSLP / CLANKER</div>
+                <span className="address-value" style={{ cursor: 'default', color: 'var(--text-secondary)' }}>CLANKER</span>
+              </div>
+              <div className="address-card">
+                <div className="address-label">CHAOSLP / VIRTUAL</div>
+                <span className="address-value" style={{ cursor: 'default', color: 'var(--text-secondary)' }}>VIRTUAL</span>
+              </div>
+              <div className="address-card">
+                <div className="address-label">CHAOSLP / VENDYZ</div>
+                <span className="address-value" style={{ cursor: 'default', color: 'var(--text-secondary)' }}>VENDYZ</span>
+              </div>
+            </div>
           </section>
 
-          {/* 6. Project Fundraising */}
+          {/* 6. The Flywheel */}
           <section id="section-6" className="rails-section">
-            <h2 className="rails-h2">6. Project Fundraising</h2>
-            <p>
-              The multi-multisig model creates a fundraising mechanism that works through information flow rather
-              than token sales.
-            </p>
-            <p>
-              A project hires the abc-alpha bot to deploy a ChaosTheory Safe with LP positions between their token,
-              $CHAOS, and $USDC. The project gets liquidity and volume without selling tokens. Stakers get yield.
-              $CHAOS gets more arb surfaces feeding the PBW.
-            </p>
-          </section>
-
-          {/* 7. The Flywheel */}
-          <section id="section-7" className="rails-section">
-            <h2 className="rails-h2">7. The Flywheel as Information Dynamics</h2>
+            <h2 className="rails-h2">6. The Flywheel</h2>
             <p>
               More surfaces create more information gradients. More gradients generate more volume. More volume
               generates more fees. More fees build walls during consolidation. Walls buffer shocks. Buffered shocks
-              mean consolidation restarts at higher levels. RATCHET emissions accelerate supply lockup. Less supply
-              means walls go further. More operators add more surfaces.
+              mean consolidation restarts at higher levels. Staking locks up supply, making walls go further.
             </p>
             <p>
-              That&apos;s the long game. Not a token with a clever buyback mechanism. A piece of Ethereum&apos;s information
-              infrastructure that gets smarter as more people and bots use it.
+              That&apos;s the loop. Whether it compounds depends on sustained volume during consolidation periods.
             </p>
           </section>
 
-          {/* 8. Infrastructure */}
-          <section id="section-8" className="rails-section">
-            <h2 className="rails-h2">8. Infrastructure</h2>
+          {/* 7. Infrastructure */}
+          <section id="section-7" className="rails-section">
+            <h2 className="rails-h2">7. Infrastructure</h2>
             <div className="rails-address-grid">
               <div className="address-card">
                 <div className="address-label">Rails Multisig (Gnosis Safe, Base)</div>
@@ -435,85 +427,29 @@ export default function WhitepaperPage() {
                 </a>
               </div>
               <div className="address-card">
-                <div className="address-label">$CHAOS (Base, 80% creator fee)</div>
+                <div className="address-label">$CHAOSLP (Base, 80% creator fee)</div>
                 <a href={LINKS.basescan} target="_blank" rel="noopener noreferrer" className="address-value">
-                  0xFaB2ee8eB6B26208BfB5c41012661e62b4Dc9292
+                  0x8454d062506a27675706148ecdd194e45e44067a
                 </a>
               </div>
               <div className="address-card">
-                <div className="address-label">Flaunch Integration (NFT ID 7432, PBW + ISP hooks)</div>
+                <div className="address-label">Flaunch Integration (PBW + ISP hooks)</div>
                 <span className="address-value" style={{ cursor: 'default', color: 'var(--text-secondary)' }}>
-                  Pool ID: 0xcbfbb74c...
+                  Pool ID: 0x516af52d...
                 </span>
               </div>
             </div>
           </section>
 
-          {/* 9. Hiring the Bot */}
-          <section id="section-9" className="rails-section">
-            <h2 className="rails-h2">9. Hiring the Bot</h2>
-            <div className="rails-services-table">
-              <div className="rails-services-header">
-                <span>Service</span><span>Delivery</span><span>Price</span>
-              </div>
-              <div className="rails-services-row">
-                <span className="rails-svc-name">Token Analysis Audit</span>
-                <span className="rails-svc-delivery">24h</span>
-                <span className="rails-svc-price">0.0050 ETH</span>
-              </div>
-              <div className="rails-services-row">
-                <span className="rails-svc-name">Gnosis Safe Setup</span>
-                <span className="rails-svc-delivery">24h</span>
-                <span className="rails-svc-price">0.0050 ETH</span>
-              </div>
-              <div className="rails-services-row">
-                <span className="rails-svc-name">Staking Contract Deployment</span>
-                <span className="rails-svc-delivery">48h</span>
-                <span className="rails-svc-price">0.0500 ETH</span>
-              </div>
-              <div className="rails-services-row">
-                <span className="rails-svc-name">New Token Volume Package</span>
-                <span className="rails-svc-delivery">72h</span>
-                <span className="rails-svc-price">0.0100 ETH</span>
-              </div>
-              <div className="rails-services-row">
-                <span className="rails-svc-name">LP Strategy Consult</span>
-                <span className="rails-svc-delivery">48h</span>
-                <span className="rails-svc-price">0.1000 ETH</span>
-              </div>
-              <div className="rails-services-row">
-                <span className="rails-svc-name">AI-Ready Website Layer</span>
-                <span className="rails-svc-delivery">48h</span>
-                <span className="rails-svc-price">0.0500 ETH</span>
-              </div>
-            </div>
-            <p className="rails-services-note">
-              Service requests through{' '}
-              <a href={LINKS.moltlaunch} target="_blank" rel="noopener noreferrer">MoltLaunch escrow</a>.
-              Agent docs at{' '}
-              <a href={LINKS.agentDocs} target="_blank" rel="noopener noreferrer">abc-alpha.epicdylan.com</a>.
-            </p>
-          </section>
-
-          {/* 10. What Comes Next */}
-          <section id="section-10" className="rails-section">
-            <h2 className="rails-h2">10. What Comes Next</h2>
-            <p><strong>Second multisig.</strong> Higher-risk pair composition. Tests whether stakers distribute across portfolios by risk appetite.</p>
-            <p><strong>Project onboarding.</strong> Each new Safe adds surfaces to the topology.</p>
-            <p><strong>Machine-readable infrastructure.</strong> API endpoints and server-rendered pages making pool, staking, and arb data accessible to agents and bots.</p>
-            <p><strong>Network intelligence.</strong> As participants navigate the system, the network accumulates collective knowledge about where value should flow.</p>
-
+          {/* Links */}
+          <section className="rails-section">
             <div className="rails-links-grid">
-              <a href={LINKS.agentDocs} target="_blank" rel="noopener noreferrer" className="rails-link-card">
-                <span className="rails-link-label">Agent Docs</span>
-                <span className="rails-link-url">abc-alpha.epicdylan.com</span>
-              </a>
               <Link href="/stake" className="rails-link-card">
-                <span className="rails-link-label">Stake $CHAOS</span>
+                <span className="rails-link-label">Stake $CHAOSLP</span>
                 <span className="rails-link-url">chaos-theory.epicdylan.com/stake</span>
               </Link>
               <a href={LINKS.flaunch} target="_blank" rel="noopener noreferrer" className="rails-link-card">
-                <span className="rails-link-label">Trade $CHAOS</span>
+                <span className="rails-link-label">Trade $CHAOSLP</span>
                 <span className="rails-link-url">flaunch.gg</span>
               </a>
               <a href={LINKS.multisig} target="_blank" rel="noopener noreferrer" className="rails-link-card">
@@ -524,17 +460,13 @@ export default function WhitepaperPage() {
                 <span className="rails-link-label">ChaosLP Staking Hub</span>
                 <span className="rails-link-url">0x48D9...20a</span>
               </a>
-              <a href={LINKS.moltlaunch} target="_blank" rel="noopener noreferrer" className="rails-link-card">
-                <span className="rails-link-label">MoltLaunch Agent</span>
-                <span className="rails-link-url">moltlaunch.com</span>
+              <a href={LINKS.arbme} target="_blank" rel="noopener noreferrer" className="rails-link-card">
+                <span className="rails-link-label">ArbMe</span>
+                <span className="rails-link-url">arbme.epicdylan.com</span>
               </a>
-              <a href={LINKS.basescan} target="_blank" rel="noopener noreferrer" className="rails-link-card">
-                <span className="rails-link-label">Basescan</span>
-                <span className="rails-link-url">basescan.org</span>
-              </a>
-              <a href={LINKS.warpcast} target="_blank" rel="noopener noreferrer" className="rails-link-card">
+              <a href="https://warpcast.com/chaostheory0506" target="_blank" rel="noopener noreferrer" className="rails-link-card">
                 <span className="rails-link-label">Warpcast</span>
-                <span className="rails-link-url">@abc-alpha</span>
+                <span className="rails-link-url">@chaostheory0506</span>
               </a>
             </div>
           </section>
